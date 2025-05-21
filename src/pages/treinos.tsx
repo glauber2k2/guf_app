@@ -203,27 +203,28 @@ export default function TreinosScreen() {
           <Text style={globalStyles.newWorkoutButtonText}>Iniciar Novo Treino</Text>
         </TouchableOpacity>
 
-        {/* Botão "Cadastrar Nova Rotina" - Fora do collapsible, mas dentro da mesma seção lógica */}
-        {/* Movido para cá para ficar abaixo do botão "Iniciar Novo Treino" e acima do collapsible */}
-        <TouchableOpacity style={globalStyles.addRoutineButton} onPress={handleAddRoutine}>
-            <Ionicons name="add" size={20} color="white" />
-            <Text style={globalStyles.addRoutineButtonText}>Cadastrar Nova Rotina</Text>
-        </TouchableOpacity>
+      
+      
 
-        {/* Seção do Collapsible para "Minhas Rotinas" */}
-        <View style={globalStyles.routinesSection}>
-          {/* Cabeçalho do Collapsible - Clicável para expandir/recolher */}
-          <TouchableOpacity style={styles.collapsibleHeader} onPress={toggleRoutinesVisibility}>
-            <Ionicons
-              name={isRoutinesExpanded ? 'caret-down-outline' : 'caret-forward-outline'}
-              size={20}
-              color="#555"
-              style={styles.collapsibleArrow}
+          
+            <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}> 
+              
+              <TouchableOpacity style={styles.collapsibleHeader} onPress={toggleRoutinesVisibility}>
+                <Ionicons
+                 name={isRoutinesExpanded ? 'caret-down-outline' : 'caret-forward-outline'}
+                 size={20}
+                 color="#555"
+                 style={styles.collapsibleArrow}
             />
-            <Text style={styles.collapsibleTitle}>Minhas Rotinas</Text>
-          </TouchableOpacity>
+              <Text style={styles.collapsibleTitle}>Minhas Rotinas</Text>
+            </TouchableOpacity>
 
-          {/* Conteúdo do Collapsible - Renderizado condicionalmente */}
+            <TouchableOpacity style={globalStyles.addRoutineButton} onPress={handleAddRoutine}>
+            <Ionicons name="add" size={20} color="black" />
+           
+        </TouchableOpacity>
+          </View>
+          
           {isRoutinesExpanded && (
             <View>
               {routines.length === 0 ? (
@@ -246,7 +247,7 @@ export default function TreinosScreen() {
               )}
             </View>
           )}
-        </View>
+       
 
         {/* Modal para Opções da Rotina (Editar/Deletar) - Este modal permanece */}
         <Modal

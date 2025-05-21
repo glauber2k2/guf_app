@@ -37,15 +37,10 @@ export const globalStyles = StyleSheet.create({
   newWorkoutButton: {
     backgroundColor: '#541cb6',
     paddingVertical: 18,
-    borderRadius: 12,
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    shadowColor: '#541cb6',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
     flexDirection: 'row',
   },
   newWorkoutButtonText: {
@@ -66,13 +61,8 @@ export const globalStyles = StyleSheet.create({
     marginBottom: 20,
   },
   addRoutineButton: {
-    backgroundColor: '#000',
-    paddingVertical: 12,
-    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 30,
-    flexDirection: 'row',
   },
   addRoutineButtonText: {
     color: 'white',
@@ -143,14 +133,10 @@ export const globalStyles = StyleSheet.create({
     fontSize: 16,
   },
   routineItem: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#00000010',
     borderRadius: 8,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+
   },
   routineItemHeader: {
     flexDirection: 'row',

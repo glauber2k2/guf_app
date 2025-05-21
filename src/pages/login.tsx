@@ -51,34 +51,33 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center', // Centraliza o conteúdo verticalmente
-    paddingHorizontal: 20,
+    padding: 20,
   
   },
   top: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
   },
   logo: {
     width: 200,
     height: 90,
-    marginBottom: 10,
+    marginBottom: 20,
   },
   welcomeText: {
     fontSize: 24, // Aumenta o tamanho da fonte para melhor visibilidade
     fontWeight: 'bold', // Deixa o texto em negrito
-    color: '#333', // Cor mais escura para o texto
+    color: '#000', // Cor mais escura para o texto
+    textAlign: 'center',
     marginTop: 5,
-    marginBottom: 30,
   },
+ 
   input: {
     width: '100%',
     height: 50, // Aumenta a altura para melhor toque
-    borderColor: '#ccc', // Borda mais suave
-    borderWidth: 1,
     borderRadius: 8, // Bordas mais arredondadas
-    marginBottom: 15,
+    marginTop: 10,
     paddingHorizontal: 15, // Mais padding interno
-    backgroundColor: '#fff', // Fundo branco para os inputs
+    backgroundColor: '#00000010', // Fundo branco para os inputs
     fontSize: 16, // Tamanho da fonte do input
   },
   loginButton: {
@@ -88,24 +87,23 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center', // Centraliza o conteúdo (texto ou loading)
-    marginTop: 10, // Espaçamento superior
+    marginTop: 20, // Espaçamento superior
   },
+
   loginButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '500',
     fontSize: 18, // Aumenta o tamanho da fonte
   },
   googleButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor: '#ddd', // Borda mais suave
-    borderWidth: 1,
     borderRadius: 8,
     paddingVertical: 12, // Ajusta o padding
     width: '100%',
     justifyContent: 'center',
-    marginTop: 20, // Mais espaçamento superior
-    backgroundColor: '#fff',
+    marginTop: 10, // Mais espaçamento superior
+    backgroundColor: '#00000010',
   },
   googleIcon: {
     marginRight: 10,
@@ -116,10 +114,22 @@ const styles = StyleSheet.create({
     fontWeight: '500', // Peso da fonte
   },
   forgotPasswordText: {
-    marginTop: 15,
+    marginTop: 5,
     color: '#541cb6',
     fontSize: 14,
-    textDecorationLine: 'underline',
+  },
+  signupContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  signupText: {
+    color: '#333',
+    marginRight: 8,
+  },
+  signupLink: {
+    color: '#541cb6',
+    fontWeight: 'bold',
   },
   // Estilos para a sobreposição de carregamento
   loadingOverlay: {
@@ -190,7 +200,8 @@ export default function Login() {
       >
         <View style={styles.top}>
           <Image source={Logo} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.welcomeText}>Bem-vindo de volta!</Text>
+          <Text style={styles.welcomeText}>Bem-vindo de volta ao seu espaço de evolução.</Text>
+         
         </View>
 
         <TextInput
@@ -212,16 +223,18 @@ export default function Login() {
           editable={!isLoading} // Desabilita input durante o carregamento
         />
 
+      <View style={{ width: '100%', alignItems: 'flex-end' }}>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+        </TouchableOpacity>
+        </View>
+
         <TouchableOpacity
           style={styles.loginButton}
           onPress={handleLogin}
           disabled={isLoading} // Desabilita botão durante o carregamento
         >
           <Text style={styles.loginButtonText}>Entrar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -232,6 +245,13 @@ export default function Login() {
           <AntDesign name="google" size={24} color="#EA4335" style={styles.googleIcon} />
           <Text style={styles.googleButtonText}>Logar com o Google</Text>
         </TouchableOpacity>
+
+        <View style={styles.signupContainer}>
+            <Text style={styles.signupText}>Não possui conta?</Text>
+            <TouchableOpacity onPress={handleForgotPassword}>
+                <Text style={styles.signupLink}>Cadastre-se</Text>
+            </TouchableOpacity>
+        </View>
 
         {/* Sobreposição de carregamento em tela cheia */}
         {isLoading && (
