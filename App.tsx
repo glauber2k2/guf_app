@@ -1,10 +1,15 @@
+// App.tsx
 import React from "react";
-import { StatusBar, StyleSheet, View } from "react-native";
+import { StatusBar, StyleSheet, View, Platform } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+
+// Importa os tipos de navegação definidos em src/types.ts
+// AGORA IMPORTANDO RootStackParamList e BottomTabParamList
+import { RootStackParamList, BottomTabParamList, Routine } from "./src/types";
 
 // Telas
 import LoginScreen from "./src/pages/login";
@@ -12,28 +17,17 @@ import TreinosScreen from "./src/pages/treinos";
 import FeedScreen from "./src/pages/feed";
 import ContaScreen from "./src/pages/conta";
 import AddEditRoutineScreen from "./src/pages/AddEditRoutineModal";
-import WorkoutInProgressScreen from "./src/pages/WorkoutInProgessScreen"; // Importe a nova tela de treino
+import WorkoutInProgressScreen from "./src/pages/WorkoutInProgessScreen";
+import GroupsScreen from "./src/pages/GroupsScreen";
 
-// Definindo os tipos de navegação
-// Importe Routine do seu arquivo de tipos, se ainda não estiver globalmente disponível
-import { Routine } from "./src/types"; // Certifique-se de que o caminho para 'types' está correto
-
-export type RootStackParamList = {
-  Login: undefined;
-  MainApp: undefined;
-  AddEditRoutine: { selectedRoutine?: Routine | null }; // Ajustado para corresponder ao tipo esperado
-  WorkoutInProgress: { selectedRoutine: Routine }; // Adicionado o tipo para a nova tela
-};
-
-export type BottomTabParamList = {
-  Treinos: undefined;
-  Feed: undefined;
-  Conta: undefined;
-};
-
+// Cria os navegadores com seus respectivos tipos
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
+/**
+ * Componente que define as abas inferiores do aplicativo.
+ * As rotas definidas aqui correspondem às abas visíveis.
+ */
 function MainAppTabs() {
   return (
     <Tab.Navigator
@@ -41,6 +35,7 @@ function MainAppTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: React.ComponentProps<typeof Ionicons>["name"];
 
+          // Define o ícone com base na rota atual e no estado de foco
           switch (route.name) {
             case "Treinos":
               iconName = focused ? "barbell" : "barbell-outline";
@@ -51,8 +46,11 @@ function MainAppTabs() {
             case "Conta":
               iconName = focused ? "person-circle" : "person-circle-outline";
               break;
+            case "Groups":
+              iconName = focused ? "people" : "people-outline";
+              break;
             default:
-              iconName = "ellipse-outline";
+              iconName = "ellipse-outline"; // Ícone padrão para rotas não mapeadas
           }
 
           return (
@@ -72,63 +70,86 @@ function MainAppTabs() {
             </View>
           );
         },
-        tabBarActiveTintColor: "#541cb6", // Cor do ícone ativo (será branco dentro do círculo roxo)
-        tabBarInactiveTintColor: "gray", // Cor do ícone inativo
+        tabBarActiveTintColor: "#541cb6", // Cor principal para o ícone ativo
+        tabBarInactiveTintColor: "gray", // Cor para o ícone inativo
         tabBarStyle: styles.tabBarStyle, // Estilo da barra de navegação
-        tabBarLabelStyle: styles.tabBarLabelStyle, // Mantido, mas não será visível
-        tabBarShowLabel: false, // REMOVIDO os títulos
-        headerShown: false,
-        tabBarLabelPosition: "beside-icon",
+        tabBarLabelStyle: styles.tabBarLabelStyle, // Estilo do texto do label (se visível)
+        tabBarShowLabel: false, // Oculta os títulos das abas para usar apenas ícones
+        headerShown: false, // Oculta o cabeçalho padrão das telas de aba
+        tabBarLabelPosition: "beside-icon", // Posição do label em relação ao ícone (não visível com tabBarShowLabel: false)
       })}
     >
+      {/* Definição das telas que serão exibidas como abas */}
       <Tab.Screen name="Treinos" component={TreinosScreen} />
       <Tab.Screen name="Feed" component={FeedScreen} />
+      <Tab.Screen name="Groups" component={GroupsScreen} />
       <Tab.Screen name="Conta" component={ContaScreen} />
     </Tab.Navigator>
   );
 }
 
+/**
+ * Componente principal da aplicação que gerencia a navegação em pilha (Stack Navigator).
+ * Telas como Login, e modais que abrem sobre o conteúdo principal, são definidas aqui.
+ */
 export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Login">
+          {/* Tela de Login, sem cabeçalho */}
           <Stack.Screen
             name="Login"
             component={LoginScreen}
             options={{ headerShown: false }}
           />
+          {/* A tela principal do aplicativo (com as abas), sem cabeçalho */}
           <Stack.Screen
             name="MainApp"
             component={MainAppTabs}
             options={{ headerShown: false }}
           />
+          {/* Tela de Treino em Andamento, sem cabeçalho padrão */}
+          <Stack.Screen
+            name="WorkoutInProgress"
+            component={WorkoutInProgressScreen}
+            options={{ headerShown: false }}
+          />
+          {/* Tela de Adicionar/Editar Rotina, apresentada como um modal */}
           <Stack.Screen
             name="AddEditRoutine"
             component={AddEditRoutineScreen}
             options={{
               headerShown: false,
-              presentation: "modal",
+              presentation: "modal", // Estilo de apresentação como modal
             }}
           />
-          {/* Adicionando a nova tela de treino em andamento ao Stack Navigator */}
+
+          {/* A rota 'Groups' também está no Stack Navigator para permitir navegação direta,
+              caso haja alguma funcionalidade que navegue para 'Groups' fora das abas.
+              Se 'Groups' for *apenas* acessível via Bottom Tab, esta linha pode ser removida.
+          */}
           <Stack.Screen
-            name="WorkoutInProgress"
-            component={WorkoutInProgressScreen}
-            options={{ headerShown: false }} // Geralmente, telas de treino em andamento não têm cabeçalho padrão
+            name="Groups"
+            component={GroupsScreen}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
-        <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+        {/* Configuração da barra de status do sistema */}
+        <StatusBar
+          backgroundColor="#fff"
+          barStyle={Platform.OS === "android" ? "dark-content" : "default"} // Ajuste para iOS
+        />
       </NavigationContainer>
     </SafeAreaProvider>
   );
 }
 
+// Estilos para os componentes de navegação e abas
 const styles = StyleSheet.create({
   tabBarStyle: {
     backgroundColor: "#e9ebee",
     borderTopWidth: 0,
-    // shadowColor: "#00000000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -151,9 +172,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabIconCircleActive: {
-    backgroundColor: "#541cb6",
+    backgroundColor: "#541cb6", // Cor do círculo quando a aba está ativa
   },
   tabIconCircleInactive: {
-    backgroundColor: "transparent",
+    backgroundColor: "transparent", // Fundo transparente quando a aba está inativa
   },
 });

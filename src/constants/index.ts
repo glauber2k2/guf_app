@@ -1,23 +1,23 @@
-import { Exercise } from '../types'; // Importe Exercise do arquivo de tipos compartilhado
+// constants.ts
+export const STORAGE_KEY = "@MyFitnessApp:routines";
+// NOVO: Chave para Grupos
+export const GROUPS_STORAGE_KEY = "@MyFitnessApp:groups";
 
-export const STORAGE_KEY = '@my_routines';
-
-export const MOCK_AVAILABLE_EXERCISES: Omit<Exercise, 'sets' | 'reps'>[] = [
-  { id: '1', name: 'Agachamento Livre' },
-  { id: '2', name: 'Leg Press' },
-  { id: '3', name: 'Cadeira Extensora' },
-  { id: '4', name: 'Mesa Flexora' },
-  { id: '5', name: 'Panturrilha em Pé' },
-  { id: '6', name: 'Supino Reto com Barra' },
-  { id: '7', name: 'Supino Inclinado Halteres' },
-  { id: '8', name: 'Crucifixo Máquina' },
-  { id: '9', name: 'Desenvolvimento Militar' },
-  { id: '10', name: 'Remada Curvada' },
-  { id: '11', name: 'Puxada Alta' },
-  { id: '12', name: 'Rosca Direta' },
-  { id: '13', name: 'Tríceps Corda' },
-  { id: '14', name: 'Abdominal Crunch' },
-  { id: '15', name: 'Prancha' },
-  { id: '16', name: 'Corrida na Esteira' },
-  { id: '17', name: 'Caminhada' },
+export const MOCK_AVAILABLE_EXERCISES = [
+  // ... seus exercícios mockados existentes
+  { id: "1", name: "Supino Reto" },
+  { id: "2", name: "Agachamento" },
+  { id: "3", name: "Remada Curvada" },
+  { id: "4", name: "Desenvolvimento Ombro" },
+  { id: "5", name: "Rosca Direta" },
+  { id: "6", name: "Tríceps Testa" },
+  { id: "7", name: "Leg Press" },
+  { id: "8", name: "Cadeira Extensora" },
+  { id: "9", name: "Mesa Flexora" },
+  { id: "10", name: "Panturrilha em Pé" },
+  { id: "11", name: "Abdominal Crunch" },
+  { id: "12", name: "Prancha" },
+  { id: "13", name: "Puxada Frontal" },
+  { id: "14", name: "Voador Peitoral" },
+  { id: "15", name: "Elevação Lateral" },
 ];
