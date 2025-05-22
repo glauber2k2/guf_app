@@ -1,5 +1,5 @@
 // components/ExerciseSelectionModal.tsx
-import React from 'react';
+import React from "react";
 import {
   Modal,
   View,
@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Exercise } from '../types';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Exercise } from "../../../shared/types";
 
 interface ExerciseSelectionModalProps {
   isVisible: boolean;
@@ -19,8 +19,10 @@ interface ExerciseSelectionModalProps {
   onClose: () => void;
   onConfirm: () => void;
   onSearchChange: (text: string) => void;
-  onToggleExerciseSelection: (exercise: Omit<Exercise, 'sets' | 'reps'>) => void;
-  availableExercises: Omit<Exercise, 'sets' | 'reps'>[];
+  onToggleExerciseSelection: (
+    exercise: Omit<Exercise, "sets" | "reps">
+  ) => void;
+  availableExercises: Omit<Exercise, "sets" | "reps">[];
 }
 
 const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
@@ -64,7 +66,7 @@ const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
             <Text style={styles.emptyListText}>
               {searchQuery
                 ? `Nenhum exercício encontrado para "${searchQuery}".`
-                : 'Nenhum exercício disponível.'}
+                : "Nenhum exercício disponível."}
             </Text>
           ) : (
             <FlatList
@@ -83,9 +85,9 @@ const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
                     onPress={() => onToggleExerciseSelection(item)}
                   >
                     <Ionicons
-                      name={isSelected ? 'checkbox-outline' : 'square-outline'}
+                      name={isSelected ? "checkbox-outline" : "square-outline"}
                       size={24}
-                      color={isSelected ? '#8e44ad' : '#555'}
+                      color={isSelected ? "#8e44ad" : "#555"}
                     />
                     <Text style={styles.exerciseName}>{item.name}</Text>
                   </TouchableOpacity>
@@ -114,85 +116,85 @@ const ExerciseSelectionModal: React.FC<ExerciseSelectionModalProps> = ({
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
   modalView: {
-    width: '90%',
-    height: '80%',
-    backgroundColor: 'white',
+    width: "90%",
+    height: "80%",
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
     marginBottom: 15,
   },
   title: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   closeButton: {
     padding: 5,
   },
   searchInput: {
-    width: '100%',
+    width: "100%",
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: "#ddd",
     borderRadius: 10,
     padding: 12,
     fontSize: 16,
     marginBottom: 15,
-    color: '#333',
+    color: "#333",
   },
   exerciseList: {
-    width: '100%',
+    width: "100%",
     flex: 1,
   },
   exerciseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
   selectedExerciseItem: {
-    backgroundColor: '#f3e8ff',
+    backgroundColor: "#f3e8ff",
     borderRadius: 8,
   },
   exerciseName: {
     fontSize: 16,
     marginLeft: 10,
-    color: '#333',
+    color: "#333",
   },
   confirmButton: {
-    backgroundColor: '#8e44ad',
+    backgroundColor: "#8e44ad",
     borderRadius: 10,
     paddingVertical: 15,
-    width: '100%',
+    width: "100%",
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   confirmButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   emptyListText: {
-    color: '#777',
-    textAlign: 'center',
+    color: "#777",
+    textAlign: "center",
     marginTop: 20,
     fontSize: 16,
   },

@@ -59,7 +59,7 @@ interface ResumedWorkoutState {
 export type RootStackParamList = {
   WorkoutInProgress: {
     selectedRoutine?: Routine;
-    resumedWorkoutState?: ResumedWorkoutState; // Corrigido: Adicionado como opcional
+    resumedWorkoutState?: ResumedWorkoutState;
   };
   // Adicione outras rotas aqui conforme necessário para o seu aplicativo
 };

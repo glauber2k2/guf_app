@@ -14,10 +14,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SwipeListView } from "react-native-swipe-list-view";
-
-import { Exercise, Routine, RootStackParamList } from "../types";
-import { STORAGE_KEY, MOCK_AVAILABLE_EXERCISES } from "../constants";
+import { Exercise, RootStackParamList, Routine } from "../../../shared/types";
 import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
+import {
+  MOCK_AVAILABLE_EXERCISES,
+  STORAGE_KEY,
+} from "../../../shared/constants";
 
 type AddEditRoutineScreenRouteProp = RouteProp<
   RootStackParamList,

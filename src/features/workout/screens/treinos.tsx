@@ -21,12 +21,10 @@ import {
 } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { RootStackParamList, Routine } from "../../../shared/types";
+import { STORAGE_KEY } from "../../../shared/constants";
+import { globalStyles } from "../../../styles";
 import RoutineCard from "../components/RoutineCard";
-
-import { Routine, RootStackParamList } from "../types";
-import { STORAGE_KEY } from "../constants";
-import { globalStyles } from "../styles";
 
 if (
   Platform.OS === "android" &&

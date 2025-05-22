@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import NetInfo from "@react-native-community/netinfo";
 import { LinearGradient } from "expo-linear-gradient";
-import { Group } from "../types";
+import { Group } from "../../../shared/types";
 
 const { height: screenHeight } = Dimensions.get("window");
 const GroupsScreen: React.FC = () => {
@@ -315,7 +315,7 @@ const GroupsScreen: React.FC = () => {
 
   const renderGroupItem = ({ item }: { item: Group }) => (
     <View style={styles.groupItemContainer}>
-      <Text style={styles.groupItemTitle}>{item.name}</Text>{" "}
+      <Text style={styles.groupItemTitle}>{item.name}</Text>
       <View style={styles.groupCard}>
         <View style={styles.profilePhotoArea}>
           <Ionicons name="people-circle-outline" size={100} color="#ccc" />
@@ -323,13 +323,13 @@ const GroupsScreen: React.FC = () => {
 
         <View style={styles.pointsStrip}>
           <View style={styles.leaderInfo}>
-            <Ionicons name="trophy" size={24} color="#FFD700" />{" "}
+            <Ionicons name="trophy" size={24} color="#FFD700" />
             <Text style={styles.pointsText}>
               Líder: {item.leaderPoints} pts
             </Text>
           </View>
           <View style={styles.userInfo}>
-            <Ionicons name="person-circle" size={24} color="#ADD8E6" />{" "}
+            <Ionicons name="person-circle" size={24} color="#ADD8E6" />
             <Text style={styles.pointsText}>Seus: {item.userPoints} pts</Text>
           </View>
         </View>

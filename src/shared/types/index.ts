@@ -26,7 +26,7 @@ export type Group = {
 // Qualquer tela que possa ser navegada diretamente (não apenas via tabs) deve estar aqui.
 export type RootStackParamList = {
   Login: undefined; // Tela de login, sem parâmetros
-  MainApp: undefined; // A rota que encapsula o BottomTabNavigator
+  MainTab: undefined; // A rota que encapsula o BottomTabNavigator
   AddEditRoutine: { selectedRoutine: Routine | null }; // Tela de adicionar/editar rotina com parâmetro opcional
   WorkoutInProgress: { selectedRoutine: Routine }; // Tela de treino em andamento com a rotina selecionada
   // As rotas abaixo são acessíveis via tabs, mas também podem ser navegadas diretamente pelo Stack se necessário.
