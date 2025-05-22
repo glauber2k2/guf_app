@@ -1,22 +1,22 @@
-import React from 'react';
-import { StatusBar, StyleSheet, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import React from "react";
+import { StatusBar, StyleSheet, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 // Telas
-import LoginScreen from './src/pages/login';
-import TreinosScreen from './src/pages/treinos';
-import FeedScreen from './src/pages/feed';
-import ContaScreen from './src/pages/conta';
-import AddEditRoutineScreen from './src/pages/AddEditRoutineModal';
-import WorkoutInProgressScreen from './src/pages/WorkoutInProgessScreen'; // Importe a nova tela de treino
+import LoginScreen from "./src/pages/login";
+import TreinosScreen from "./src/pages/treinos";
+import FeedScreen from "./src/pages/feed";
+import ContaScreen from "./src/pages/conta";
+import AddEditRoutineScreen from "./src/pages/AddEditRoutineModal";
+import WorkoutInProgressScreen from "./src/pages/WorkoutInProgessScreen"; // Importe a nova tela de treino
 
 // Definindo os tipos de navegação
 // Importe Routine do seu arquivo de tipos, se ainda não estiver globalmente disponível
-import { Routine } from './src/types'; // Certifique-se de que o caminho para 'types' está correto
+import { Routine } from "./src/types"; // Certifique-se de que o caminho para 'types' está correto
 
 export type RootStackParamList = {
   Login: undefined;
@@ -39,29 +39,46 @@ function MainAppTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: React.ComponentProps<typeof Ionicons>['name'];
+          let iconName: React.ComponentProps<typeof Ionicons>["name"];
 
           switch (route.name) {
-            case 'Treinos':
-              iconName = focused ? 'barbell' : 'barbell-outline';
+            case "Treinos":
+              iconName = focused ? "barbell" : "barbell-outline";
               break;
-            case 'Feed':
-              iconName = focused ? 'newspaper' : 'newspaper-outline';
+            case "Feed":
+              iconName = focused ? "newspaper" : "newspaper-outline";
               break;
-            case 'Conta':
-              iconName = focused ? 'person-circle' : 'person-circle-outline';
+            case "Conta":
+              iconName = focused ? "person-circle" : "person-circle-outline";
               break;
             default:
-              iconName = 'ellipse-outline';
+              iconName = "ellipse-outline";
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return (
+            <View
+              style={[
+                styles.tabIconCircle,
+                focused
+                  ? styles.tabIconCircleActive
+                  : styles.tabIconCircleInactive,
+              ]}
+            >
+              <Ionicons
+                name={iconName}
+                size={size * 1.2}
+                color={focused ? "white" : color}
+              />
+            </View>
+          );
         },
-        tabBarActiveTintColor: '#541cb6',
-        tabBarInactiveTintColor: 'gray',
-        tabBarStyle: styles.tabBarStyle,
-        tabBarLabelStyle: styles.tabBarLabelStyle,
+        tabBarActiveTintColor: "#541cb6", // Cor do ícone ativo (será branco dentro do círculo roxo)
+        tabBarInactiveTintColor: "gray", // Cor do ícone inativo
+        tabBarStyle: styles.tabBarStyle, // Estilo da barra de navegação
+        tabBarLabelStyle: styles.tabBarLabelStyle, // Mantido, mas não será visível
+        tabBarShowLabel: false, // REMOVIDO os títulos
         headerShown: false,
+        tabBarLabelPosition: "beside-icon",
       })}
     >
       <Tab.Screen name="Treinos" component={TreinosScreen} />
@@ -91,7 +108,7 @@ export default function App() {
             component={AddEditRoutineScreen}
             options={{
               headerShown: false,
-              presentation: 'modal',
+              presentation: "modal",
             }}
           />
           {/* Adicionando a nova tela de treino em andamento ao Stack Navigator */}
@@ -109,18 +126,34 @@ export default function App() {
 
 const styles = StyleSheet.create({
   tabBarStyle: {
-    backgroundColor: '#fff',
+    backgroundColor: "#e9ebee",
     borderTopWidth: 0,
-    elevation: 10,
-    shadowColor: '#000',
+    // shadowColor: "#00000000",
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    height: 60,
+    height: 70,
     paddingBottom: 5,
+    borderRadius: 35,
+    marginHorizontal: 20,
+    position: "absolute",
+    bottom: 15,
   },
   tabBarLabelStyle: {
     fontSize: 12,
     marginBottom: 5,
+  },
+  tabIconCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tabIconCircleActive: {
+    backgroundColor: "#541cb6",
+  },
+  tabIconCircleInactive: {
+    backgroundColor: "transparent",
   },
 });

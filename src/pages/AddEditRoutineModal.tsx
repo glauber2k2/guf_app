@@ -1,78 +1,91 @@
 // screens/AddEditRoutineScreen.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Alert,
-  ScrollView,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SwipeListView } from "react-native-swipe-list-view";
 
-// Importa os tipos e constantes
-import { Exercise, Routine, RootStackParamList } from '../types';
-import { STORAGE_KEY, MOCK_AVAILABLE_EXERCISES } from '../constants'; // <-- Importação crucial dos dados mockados
-import ExerciseSelectionModal from '../components/ExerciseSelectionModal';
+import { Exercise, Routine, RootStackParamList } from "../types";
+import { STORAGE_KEY, MOCK_AVAILABLE_EXERCISES } from "../constants";
+import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
 
-// Define o tipo para as props da rota desta tela
-type AddEditRoutineScreenRouteProp = RouteProp<RootStackParamList, 'AddEditRoutine'>;
+type AddEditRoutineScreenRouteProp = RouteProp<
+  RootStackParamList,
+  "AddEditRoutine"
+>;
 
 const AddEditRoutineScreen: React.FC = () => {
- 
-
   const navigation = useNavigation();
   const route = useRoute<AddEditRoutineScreenRouteProp>();
   const { selectedRoutine } = route.params;
 
-  const [routineName, setRoutineName] = useState('');
-  const [currentRoutineExercises, setCurrentRoutineExercises] = useState<Exercise[]>([]);
-  const [exerciseSelectionModalVisible, setExerciseSelectionModalVisible] = useState(false);
-  const [selectedExercisesForModal, setSelectedExercisesForModal] = useState<Exercise[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [routineName, setRoutineName] = useState("");
+  const [currentRoutineExercises, setCurrentRoutineExercises] = useState<
+    Exercise[]
+  >([]);
+  const [exerciseSelectionModalVisible, setExerciseSelectionModalVisible] =
+    useState(false);
+  const [selectedExercisesForModal, setSelectedExercisesForModal] = useState<
+    Exercise[]
+  >([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Inicializa estados com base na rotina selecionada (edição) ou para uma nova rotina
   useEffect(() => {
     if (selectedRoutine) {
       setRoutineName(selectedRoutine.name);
       setCurrentRoutineExercises([...selectedRoutine.exercises]);
-      setSelectedExercisesForModal([...selectedRoutine.exercises]); // Inicializa para o modal de seleção
+      setSelectedExercisesForModal([...selectedRoutine.exercises]);
     } else {
-      setRoutineName('');
+      setRoutineName("");
       setCurrentRoutineExercises([]);
       setSelectedExercisesForModal([]);
     }
   }, [selectedRoutine]);
 
-  // Gera um ID único para novas rotinas
   const generateUniqueId = () => Date.now().toString();
 
-  // Salva a rotina no AsyncStorage
   const handleSaveRoutine = async () => {
-    if (routineName.trim() === '') {
-      Alert.alert('Erro', 'Por favor, insira um nome para a rotina.');
+    if (routineName.trim() === "") {
+      Alert.alert("Erro", "Por favor, insira um nome para a rotina.");
       return;
     }
 
-    const incompleteExercises = currentRoutineExercises.filter(ex => ex.sets.trim() === '' || ex.reps.trim() === '');
+    const incompleteExercises = currentRoutineExercises.filter(
+      (ex) => ex.sets.trim() === "" || ex.reps.trim() === ""
+    );
     if (incompleteExercises.length > 0) {
-      Alert.alert('Atenção', 'Por favor, preencha as séries e repetições para todos os exercícios na rotina.');
+      Alert.alert(
+        "Atenção",
+        "Por favor, preencha as séries e repetições para todos os exercícios na rotina."
+      );
       return;
     }
 
     try {
       const existingRoutinesJson = await AsyncStorage.getItem(STORAGE_KEY);
-      let existingRoutines: Routine[] = existingRoutinesJson ? JSON.parse(existingRoutinesJson) : [];
+      let existingRoutines: Routine[] = existingRoutinesJson
+        ? JSON.parse(existingRoutinesJson)
+        : [];
 
       if (selectedRoutine) {
-        existingRoutines = existingRoutines.map(r =>
-          r.id === selectedRoutine.id ? { ...r, name: routineName.trim(), exercises: currentRoutineExercises } : r
+        existingRoutines = existingRoutines.map((r) =>
+          r.id === selectedRoutine.id
+            ? {
+                ...r,
+                name: routineName.trim(),
+                exercises: currentRoutineExercises,
+              }
+            : r
         );
       } else {
         const newRoutine: Routine = {
@@ -84,62 +97,63 @@ const AddEditRoutineScreen: React.FC = () => {
       }
 
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(existingRoutines));
-      Alert.alert('Sucesso', `Rotina "${routineName.trim()}" salva!`);
+      Alert.alert("Sucesso", `Rotina "${routineName.trim()}" salva!`);
       navigation.goBack();
     } catch (e) {
       console.error("Erro ao salvar rotina:", e);
-      Alert.alert('Erro', 'Não foi possível salvar a rotina.');
+      Alert.alert("Erro", "Não foi possível salvar a rotina.");
     }
   };
 
-  // Retorna para a tela anterior
   const handleCancelRoutine = () => {
     navigation.goBack();
   };
 
-  // Abre o modal de seleção de exercícios
   const handleOpenExerciseSelection = () => {
-    setSelectedExercisesForModal([...currentRoutineExercises]); // Clona para evitar mutações diretas
-    setSearchQuery(''); // Limpa a busca ao abrir o modal
+    setSelectedExercisesForModal([...currentRoutineExercises]);
+    setSearchQuery("");
     setExerciseSelectionModalVisible(true);
   };
 
-  // Alterna a seleção de um exercício no modal
-  const handleToggleExerciseSelection = (exercise: Omit<Exercise, 'sets' | 'reps'>) => {
-    setSelectedExercisesForModal(prevSelected => {
-      const isSelected = prevSelected.some(e => e.id === exercise.id);
+  const handleToggleExerciseSelection = (
+    exercise: Omit<Exercise, "sets" | "reps">
+  ) => {
+    setSelectedExercisesForModal((prevSelected) => {
+      const isSelected = prevSelected.some((e) => e.id === exercise.id);
       if (isSelected) {
-        return prevSelected.filter(e => e.id !== exercise.id);
+        return prevSelected.filter((e) => e.id !== exercise.id);
       } else {
-        return [...prevSelected, { ...exercise, sets: '', reps: '' }]; // Adiciona com sets/reps vazios
+        return [...prevSelected, { ...exercise, sets: "", reps: "" }];
       }
     });
   };
 
-  // Confirma a seleção de exercícios do modal
   const handleSaveExerciseSelection = () => {
     setCurrentRoutineExercises([...selectedExercisesForModal]);
     setExerciseSelectionModalVisible(false);
   };
 
-  // Cancela a seleção de exercícios no modal
   const handleCancelExerciseSelection = () => {
-    setCurrentRoutineExercises(selectedRoutine ? [...selectedRoutine.exercises] : []);
+    setCurrentRoutineExercises(
+      selectedRoutine ? [...selectedRoutine.exercises] : []
+    );
     setExerciseSelectionModalVisible(false);
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
-  // Remove um exercício da rotina atual
   const handleRemoveExerciseFromCurrentRoutine = (exerciseId: string) => {
-    setCurrentRoutineExercises(prev => prev.filter(e => e.id !== exerciseId));
+    setCurrentRoutineExercises((prev) =>
+      prev.filter((e) => e.id !== exerciseId)
+    );
   };
 
-  // Atualiza séries/repetições de um exercício
-  const handleUpdateExerciseSetsReps = (exerciseId: string, field: 'sets' | 'reps', value: string) => {
-    setCurrentRoutineExercises(prev =>
-      prev.map(ex =>
-        ex.id === exerciseId ? { ...ex, [field]: value } : ex
-      )
+  const handleUpdateExerciseSetsReps = (
+    exerciseId: string,
+    field: "sets" | "reps",
+    value: string
+  ) => {
+    setCurrentRoutineExercises((prev) =>
+      prev.map((ex) => (ex.id === exerciseId ? { ...ex, [field]: value } : ex))
     );
   };
 
@@ -153,74 +167,74 @@ const AddEditRoutineScreen: React.FC = () => {
           <Ionicons name="arrow-back" size={24} color="#888" />
         </TouchableOpacity>
         <Text style={styles.title}>
-          {selectedRoutine ? 'Editar Rotina' : 'Nova Rotina'}
+          {selectedRoutine ? "Editar Rotina" : "Nova Rotina"}
         </Text>
         <View style={{ width: 24 }} />
       </View>
-
-      <ScrollView style={styles.content}>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome da Rotina (ex: Treino de Peito)"
-          value={routineName}
-          onChangeText={setRoutineName}
-          autoCapitalize="words"
-        />
-
-        <Text style={styles.subtitle}>Exercícios:</Text>
-        {currentRoutineExercises.length === 0 ? (
-          <Text style={styles.emptyText}>Nenhum exercício adicionado.</Text>
-        ) : (
-          <FlatList
-            data={currentRoutineExercises}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <View style={styles.exerciseItem}>
-                <Text style={styles.exerciseName}>{item.name}</Text>
-                <View style={styles.setsRepsContainer}>
-                  <TextInput
-                    style={styles.setsRepsInput}
-                    placeholder="Séries"
-                    value={item.sets}
-                    onChangeText={(text) => handleUpdateExerciseSetsReps(item.id, 'sets', text)}
-                    keyboardType="numeric"
-                  />
-                  <Text style={styles.setsRepsSeparator}>x</Text>
-                  <TextInput
-                    style={styles.setsRepsInput}
-                    placeholder="Reps"
-                    value={item.reps}
-                    onChangeText={(text) => handleUpdateExerciseSetsReps(item.id, 'reps', text)}
-                    keyboardType="default"
-                  />
-                </View>
-                <TouchableOpacity onPress={() => handleRemoveExerciseFromCurrentRoutine(item.id)} style={styles.removeButton}>
-                  <Ionicons name="close-circle" size={20} color="#e74c3c" />
-                </TouchableOpacity>
-              </View>
-            )}
-            scrollEnabled={false}
-            contentContainerStyle={{ width: '100%' }}
-          />
+      <SwipeListView
+        data={currentRoutineExercises}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.exerciseItem}>
+            <Text style={styles.exerciseName}>{item.name}</Text>
+            <View style={styles.setsRepsContainer}>
+              <TextInput
+                style={styles.setsRepsInput}
+                placeholder="Séries"
+                value={item.sets}
+                onChangeText={(text) =>
+                  handleUpdateExerciseSetsReps(item.id, "sets", text)
+                }
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={styles.setsRepsInput}
+                placeholder="Reps"
+                value={item.reps}
+                onChangeText={(text) =>
+                  handleUpdateExerciseSetsReps(item.id, "reps", text)
+                }
+                keyboardType="default"
+              />
+            </View>
+          </View>
         )}
+        renderHiddenItem={({ item }) => (
+          <View style={styles.rowBack}>
+            <TouchableOpacity
+              style={[styles.backRightBtn, styles.backRightBtnRight]}
+              onPress={() => handleRemoveExerciseFromCurrentRoutine(item.id)}
+            >
+              <Ionicons name="trash-bin" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
+        )}
+        rightOpenValue={-75}
+        disableRightSwipe={true}
+        ListHeaderComponent={
+          <View style={styles.content}>
+            <TextInput
+              style={styles.input}
+              placeholder="Nome da Rotina (ex: Treino de pernas)"
+              value={routineName}
+              onChangeText={setRoutineName}
+              autoCapitalize="words"
+            />
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={handleOpenExerciseSelection}
+            >
+              <Ionicons name="add" size={20} color="white" />
+              <Text style={styles.addButtonText}>Adicionar Exercícios</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.addButton} onPress={handleOpenExerciseSelection}>
-          <Ionicons name="add" size={20} color="white" />
-          <Text style={styles.addButtonText}>Adicionar Exercícios</Text>
-        </TouchableOpacity>
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.cancelButton} onPress={handleCancelRoutine}>
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveRoutine}>
-          <Text style={styles.saveButtonText}>
-            {selectedRoutine ? 'Salvar Edição' : 'Salvar'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
+            <Text style={styles.subtitle}>Exercícios:</Text>
+            {currentRoutineExercises.length === 0 && (
+              <Text style={styles.emptyText}>Nenhum exercício adicionado.</Text>
+            )}
+          </View>
+        }
+      />
       <ExerciseSelectionModal
         isVisible={exerciseSelectionModalVisible}
         searchQuery={searchQuery}
@@ -231,136 +245,145 @@ const AddEditRoutineScreen: React.FC = () => {
         onToggleExerciseSelection={handleToggleExerciseSelection}
         availableExercises={MOCK_AVAILABLE_EXERCISES}
       />
+
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.cancelButton}
+          onPress={handleCancelRoutine}
+        >
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveButton} onPress={handleSaveRoutine}>
+          <Text style={styles.saveButtonText}>
+            {selectedRoutine ? "Salvar Edição" : "Salvar"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f4f4f4',
-  },
+  container: { flex: 1, backgroundColor: "#f4f4f4" },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: Platform.OS === 'android' ? 20 : 40,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: Platform.OS === "android" ? 20 : 40,
     paddingBottom: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    borderBottomColor: "#ddd",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
+  title: { fontSize: 20, fontWeight: "bold", color: "#333" },
+  content: { padding: 20 },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
+    backgroundColor: "#00000010",
+    borderRadius: 35,
     padding: 15,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 18,
-    fontWeight: '500',
-    color: '#555',
-    marginBottom: 10,
+    fontWeight: "500",
+    color: "#555",
+    marginVertical: 10,
   },
-  emptyText: {
-    color: '#777',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  emptyText: { color: "#777", marginBottom: 15, textAlign: "center" },
   exerciseItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+    marginHorizontal: 20,
   },
-  exerciseName: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  setsRepsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+  exerciseName: { fontSize: 16, color: "#333", flex: 1 },
+  setsRepsContainer: { flexDirection: "row", alignItems: "center" },
   setsRepsInput: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
+    borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 10,
     fontSize: 14,
-    color: '#333',
-    width: 60,
-    textAlign: 'center',
-    marginRight: 5,
+    color: "#333",
+    width: 65,
+    textAlign: "center",
+    marginRight: 8,
   },
-  setsRepsSeparator: {
-    color: '#555',
-    marginRight: 5,
+  rowBack: {
+    alignItems: "center",
+    backgroundColor: "#db4045",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    borderRadius: 10,
+    marginBottom: 10,
+    marginHorizontal: 20,
   },
-  removeButton: {
-    padding: 5,
+  backRightBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 75,
+    height: "100%",
+  },
+  backRightBtnRight: {
+    backgroundColor: "#db4045",
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
   addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#541cb6', // Roxo
-    borderRadius: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#000",
+    borderRadius: 35,
     paddingVertical: 12,
-    marginTop: 20,
   },
   addButtonText: {
-    color: 'white',
+    color: "white",
     marginLeft: 10,
-    fontWeight: '500',
+    fontWeight: "500",
     fontSize: 16,
   },
+  footerArea: { marginTop: "auto" },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 20,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "#fff",
+    marginTop: 20,
   },
   cancelButton: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
+    backgroundColor: "#00000010",
     paddingVertical: 12,
     paddingHorizontal: 20,
+    width: "50%",
   },
   cancelButtonText: {
-    color: '#555',
-    fontWeight: '500',
+    color: "#db4045",
+    fontWeight: "500",
     fontSize: 16,
+    textAlign: "center",
   },
   saveButton: {
-    backgroundColor: '#541cb6', // Roxo mais claro
-    borderRadius: 8,
+    backgroundColor: "#541cb6",
     paddingVertical: 12,
     paddingHorizontal: 20,
+    width: "50%",
   },
   saveButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    textAlign: "center",
+    fontWeight: "bold",
     fontSize: 16,
   },
 });

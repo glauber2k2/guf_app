@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -8,30 +8,37 @@ import {
   FlatList,
   ActivityIndicator,
   Modal,
-  LayoutAnimation, // Importar LayoutAnimation
-  Platform,        // Importar Platform
-  UIManager,       // Importar UIManager
-  StyleSheet,      // Importar StyleSheet para estilos locais
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, type NavigationProp, useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+  LayoutAnimation,
+  Platform,
+  UIManager,
+  StyleSheet,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useNavigation,
+  type NavigationProp,
+  useFocusEffect,
+} from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Importa os novos componentes e tipos/constantes
-import RoutineCard from '../components/RoutineCard';
+import RoutineCard from "../components/RoutineCard";
 
-import { Exercise, Routine, RootStackParamList } from '../types';
-import { STORAGE_KEY } from '../constants';
-import { globalStyles } from '../styles';
+import { Routine, RootStackParamList } from "../types";
+import { STORAGE_KEY } from "../constants";
+import { globalStyles } from "../styles";
 
-// Habilita as animações de layout (necessário para Android)
-// Isso permite que o LayoutAnimation funcione corretamente.
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-type TreinosScreenNavigationProp = NavigationProp<RootStackParamList, 'Treinos'>;
+type TreinosScreenNavigationProp = NavigationProp<
+  RootStackParamList,
+  "Treinos"
+>;
 
 export default function TreinosScreen() {
   const navigation = useNavigation<TreinosScreenNavigationProp>();
@@ -39,12 +46,7 @@ export default function TreinosScreen() {
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [selectedRoutine, setSelectedRoutine] = useState<Routine | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  // Estado para controlar a expansão do collapsible das rotinas
-  const [isRoutinesExpanded, setIsRoutinesExpanded] = useState(true); // Começa expandido por padrão
 
-  // Função para carregar as rotinas do AsyncStorage
-  // Usamos useFocusEffect para garantir que as rotinas sejam recarregadas
-  // sempre que a tela de Treinos for focada (útil após salvar/cancelar na tela de edição)
   useFocusEffect(
     useCallback(() => {
       const loadRoutines = async () => {
@@ -56,7 +58,9 @@ export default function TreinosScreen() {
             const sanitizedRoutines: Routine[] = Array.isArray(parsedRoutines)
               ? parsedRoutines.map((routine: any) => ({
                   ...routine,
-                  exercises: Array.isArray(routine.exercises) ? routine.exercises : [],
+                  exercises: Array.isArray(routine.exercises)
+                    ? routine.exercises
+                    : [],
                 }))
               : [];
             setRoutines(sanitizedRoutines);
@@ -65,7 +69,7 @@ export default function TreinosScreen() {
           }
         } catch (e) {
           console.error("Erro ao carregar rotinas do AsyncStorage:", e);
-          Alert.alert('Erro', 'Não foi possível carregar suas rotinas salvas.');
+          Alert.alert("Erro", "Não foi possível carregar suas rotinas salvas.");
           setRoutines([]);
         } finally {
           setIsLoading(false);
@@ -75,9 +79,6 @@ export default function TreinosScreen() {
     }, [])
   );
 
-  // Função para salvar as rotinas no AsyncStorage
-  // Esta função é chamada apenas quando 'routines' ou 'isLoading' mudam,
-  // garantindo que os dados sejam persistidos após alterações.
   useEffect(() => {
     if (!isLoading) {
       const saveRoutines = async (currentRoutines: Routine[]) => {
@@ -86,80 +87,57 @@ export default function TreinosScreen() {
           await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
         } catch (e) {
           console.error("Erro ao salvar rotinas no AsyncStorage:", e);
-          Alert.alert('Erro', 'Não foi possível salvar suas rotinas.');
+          Alert.alert("Erro", "Não foi possível salvar suas rotinas.");
         }
       };
       saveRoutines(routines);
     }
   }, [routines, isLoading]);
 
-  /**
-   * Inicia um novo treino.
-   * Por enquanto, apenas exibe um alerta.
-   */
   const handleNewWorkout = () => {
-    Alert.alert('Novo Treino', 'Iniciando um novo treino!');
+    Alert.alert("Novo Treino", "Iniciando um novo treino!");
   };
 
-  /**
-   * Navega para a tela de criação de nova rotina.
-   * Passa `selectedRoutine: null` para indicar que é uma nova rotina.
-   */
   const handleAddRoutine = () => {
-    navigation.navigate('AddEditRoutine', { selectedRoutine: null });
+    navigation.navigate("AddEditRoutine", { selectedRoutine: null });
   };
 
-  /**
-   * Lida com o clique em um cartão de rotina.
-   * Agora navega para a tela de treino em andamento.
-   * @param routine A rotina selecionada.
-   */
   const handleRoutinePress = (routine: Routine) => {
-    navigation.navigate('WorkoutInProgress', { selectedRoutine: routine });
+    navigation.navigate("WorkoutInProgress", { selectedRoutine: routine });
   };
 
-  /**
-   * Exibe o modal de opções (Editar/Deletar) para uma rotina.
-   * @param routine A rotina para a qual as opções serão exibidas.
-   */
   const handleOptionsPress = (routine: Routine) => {
     setSelectedRoutine(routine);
     setOptionsModalVisible(true);
   };
 
-  /**
-   * Navega para a tela de edição de rotina.
-   * Passa a rotina selecionada para preencher os campos na tela de edição.
-   */
   const handleEditOption = () => {
-    setOptionsModalVisible(false); // Fecha o modal de opções
+    setOptionsModalVisible(false);
     if (selectedRoutine) {
-      navigation.navigate('AddEditRoutine', { selectedRoutine });
+      navigation.navigate("AddEditRoutine", { selectedRoutine });
     }
   };
 
-  /**
-   * Lida com a exclusão de uma rotina.
-   * Exibe um alerta de confirmação antes de excluir.
-   */
   const handleDeleteOption = () => {
-    setOptionsModalVisible(false); // Fecha o modal de opções
+    setOptionsModalVisible(false);
     if (selectedRoutine) {
       Alert.alert(
-        'Confirmar Exclusão',
+        "Confirmar Exclusão",
         `Tem certeza que deseja excluir a rotina "${selectedRoutine.name}"?`,
         [
-          { text: 'Cancelar', style: 'cancel' },
+          { text: "Cancelar", style: "cancel" },
           {
-            text: 'Excluir',
+            text: "Excluir",
             onPress: () => {
-              // Filtra a rotina a ser excluída da lista de rotinas
-              setRoutines(prevRoutines => prevRoutines.filter(r => r.id !== selectedRoutine.id));
-              setSelectedRoutine(null); // Limpa a rotina selecionada
-              // Aplica a animação de layout na exclusão
-              LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+              setRoutines((prevRoutines) =>
+                prevRoutines.filter((r) => r.id !== selectedRoutine.id)
+              );
+              setSelectedRoutine(null);
+              LayoutAnimation.configureNext(
+                LayoutAnimation.Presets.easeInEaseOut
+              );
             },
-            style: 'destructive',
+            style: "destructive",
           },
         ],
         { cancelable: false }
@@ -167,16 +145,6 @@ export default function TreinosScreen() {
     }
   };
 
-  /**
-   * Alterna a visibilidade do collapsible de rotinas.
-   * Aplica uma animação suave ao expandir/recolher.
-   */
-  const toggleRoutinesVisibility = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setIsRoutinesExpanded(!isRoutinesExpanded);
-  };
-
-  // Exibe um indicador de carregamento enquanto as rotinas estão sendo carregadas
   if (isLoading) {
     return (
       <SafeAreaView style={globalStyles.loadingContainer}>
@@ -190,66 +158,60 @@ export default function TreinosScreen() {
     <SafeAreaView style={globalStyles.safeArea}>
       <ScrollView
         style={globalStyles.container}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-start', paddingBottom: 20 }}
+        contentContainerStyle={{
+          justifyContent: "flex-start",
+          paddingBottom: 20,
+        }}
       >
         <View style={globalStyles.header}>
           <Text style={globalStyles.title}>Seus Treinos</Text>
-          <Text style={globalStyles.subtitle}>Gerencie suas rotinas e comece a treinar!</Text>
+          <Text style={globalStyles.subtitle}>
+            Gerencie suas rotinas e comece a treinar!
+          </Text>
         </View>
 
-        {/* Botão "Iniciar Novo Treino" - Fora do collapsible */}
-        <TouchableOpacity style={globalStyles.newWorkoutButton} onPress={handleNewWorkout}>
+        <TouchableOpacity
+          style={globalStyles.newWorkoutButton}
+          onPress={handleNewWorkout}
+        >
           <Ionicons name="play-outline" size={24} color="white" />
-          <Text style={globalStyles.newWorkoutButtonText}>Iniciar Novo Treino</Text>
+          <Text style={globalStyles.newWorkoutButtonText}>
+            Iniciar Novo Treino
+          </Text>
         </TouchableOpacity>
 
-      
-      
-
-          
-            <View style={{width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}> 
-              
-              <TouchableOpacity style={styles.collapsibleHeader} onPress={toggleRoutinesVisibility}>
-                <Ionicons
-                 name={isRoutinesExpanded ? 'caret-down-outline' : 'caret-forward-outline'}
-                 size={20}
-                 color="#555"
-                 style={styles.collapsibleArrow}
-            />
-              <Text style={styles.collapsibleTitle}>Minhas Rotinas</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={globalStyles.addRoutineButton} onPress={handleAddRoutine}>
+        <View style={styles.routinesHeader}>
+          <Text style={styles.routinesTitle}>Minhas Rotinas</Text>
+          <TouchableOpacity
+            style={globalStyles.addRoutineButton}
+            onPress={handleAddRoutine}
+          >
             <Ionicons name="add" size={20} color="black" />
-           
-        </TouchableOpacity>
-          </View>
-          
-          {isRoutinesExpanded && (
-            <View>
-              {routines.length === 0 ? (
-                <Text style={styles.emptyRoutinesText}>
-                  Nenhuma rotina cadastrada ainda. Crie uma!
-                </Text>
-              ) : (
-                <FlatList
-                  data={routines}
-                  keyExtractor={(item) => item.id}
-                  renderItem={({ item }) => (
-                    <RoutineCard
-                      routine={item}
-                      onPress={handleRoutinePress}
-                      onOptionsPress={handleOptionsPress}
-                    />
-                  )}
-                  scrollEnabled={false} // Desabilita o scroll da FlatList para que o ScrollView pai gerencie
-                />
-              )}
-            </View>
-          )}
-       
+          </TouchableOpacity>
+        </View>
 
-        {/* Modal para Opções da Rotina (Editar/Deletar) - Este modal permanece */}
+        {routines.length === 0 ? (
+          <Text style={styles.emptyRoutinesText}>
+            Nenhuma rotina cadastrada ainda. Crie uma!
+          </Text>
+        ) : (
+          <FlatList
+            data={routines}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <RoutineCard
+                routine={item as any}
+                onPress={handleRoutinePress}
+                onStartPress={handleRoutinePress}
+                onOptionsPress={handleOptionsPress}
+              />
+            )}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalRoutineList}
+          />
+        )}
+
         <Modal
           animationType="fade"
           transparent={true}
@@ -258,10 +220,19 @@ export default function TreinosScreen() {
         >
           <View style={globalStyles.centeredView}>
             <View style={globalStyles.optionsModalView}>
-              <TouchableOpacity style={globalStyles.optionButton} onPress={handleEditOption}>
+              <TouchableOpacity
+                style={globalStyles.optionButton}
+                onPress={handleEditOption}
+              >
                 <Text style={globalStyles.optionButtonText}>Editar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[globalStyles.optionButton, globalStyles.optionButtonLast]} onPress={handleDeleteOption}>
+              <TouchableOpacity
+                style={[
+                  globalStyles.optionButton,
+                  globalStyles.optionButtonLast,
+                ]}
+                onPress={handleDeleteOption}
+              >
                 <Text style={globalStyles.optionButtonTextDelete}>Deletar</Text>
               </TouchableOpacity>
             </View>
@@ -272,26 +243,27 @@ export default function TreinosScreen() {
   );
 }
 
-// Estilos específicos para o collapsible
 const styles = StyleSheet.create({
-  collapsibleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    marginBottom: 10, // Espaçamento entre o cabeçalho e o conteúdo (quando expandido)
+  routinesHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    marginTop: 20, // Espaçamento superior
   },
-  collapsibleArrow: {
-    marginRight: 10,
-  },
-  collapsibleTitle: {
+  routinesTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#555',
+    fontWeight: "bold",
+    color: "#555",
+  },
+  horizontalRoutineList: {
+    gap: 10,
   },
   emptyRoutinesText: {
-    color: '#777',
+    color: "#777",
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10, // Adiciona um pouco de espaço acima do texto
+    paddingHorizontal: 16, // Garante que o texto não fique colado nas bordas
   },
 });
