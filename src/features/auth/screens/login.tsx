@@ -78,13 +78,13 @@ export default function Login({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-200 dark:bg-zinc-900">
+    <SafeAreaView className="flex-1 bg-zinc-200 dark:bg-zinc-900 pb-6">
       <KeyboardAvoidingView
-        className="flex-1 items-center justify-end mb-6 px-6"
+        className="flex-1 items-center justify-end px-6 "
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        <View className="items-center mb-6 w-full">
+        <View className="items-center mb-6 w-full ">
           <Image
             source={Logo}
             className="w-[180] h-[120] mb-6"
@@ -115,7 +115,7 @@ export default function Login({ navigation }: Props) {
         />
 
         <View
-          className="flex-row mt-8 gap-4 ml-auto"
+          className="flex-row mt-8 gap-4 ml-auto "
           style={{ marginBottom: screenHeight * 0.2 }}
         >
           <TouchableOpacity
@@ -141,7 +141,7 @@ export default function Login({ navigation }: Props) {
           </TouchableOpacity>
         </View>
 
-        <View className="flex-row gap-2">
+        <View className="flex-row gap-2 ">
           <Text className="dark:text-zinc-50">Não possui conta?</Text>
           <TouchableOpacity onPress={handleForgotPassword}>
             <Text className="text-violet-700 font-bold">Cadastre-se</Text>

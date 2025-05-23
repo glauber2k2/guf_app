@@ -60,7 +60,7 @@ export default function MainTab() {
         tabBarStyle: [
           styles.tabBarStyle,
           theme === "dark"
-            ? { backgroundColor: "#09090b" }
+            ? { backgroundColor: "#27272a" }
             : { backgroundColor: "#d4d4d8" },
         ],
         tabBarLabelStyle: styles.tabBarLabelStyle,

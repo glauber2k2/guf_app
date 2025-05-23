@@ -33,12 +33,12 @@ const RoutineCard: React.FC<RoutineCardProps> = ({
   onOptionsPress,
 }) => {
   return (
-    <View style={styles.cardContainer}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.routineName}>{routine.name}</Text>
-        <Text style={styles.muscleGroupsSubtitle}>
-          {routine.muscleGroups || "Personalizado"}
+    <View className="dark:bg-zinc-800 bg-zinc-300 p-5 rounded-3xl w-[250] h-[150]">
+      <View className="flex-row justify-between items-start">
+        <Text className="text-zinc-900 dark:text-zinc-300 font-bold text-2xl">
+          {routine.name}
         </Text>
+
         <TouchableOpacity
           onPress={() => onOptionsPress(routine)}
           style={styles.optionsButton}
@@ -46,22 +46,31 @@ const RoutineCard: React.FC<RoutineCardProps> = ({
           <Ionicons name="ellipsis-horizontal" size={20} color="#666" />
         </TouchableOpacity>
       </View>
+      <Text className="text-zinc-500">
+        {routine.muscleGroups || "Personalizado"}
+      </Text>
 
-      <View style={styles.footerContainer}>
-        <View style={styles.durationContainer}>
-          <Ionicons name="time-outline" size={18} color="#666" />
-          <Text style={styles.durationText}>
+      <View className="flex-row justify-between mt-auto">
+        <View className="flex-row items-center gap-1">
+          <Ionicons name="time-outline" size={18} color="gray" />
+          <Text className="text-zinc-500">
             {routine.durationMinutes
               ? `${routine.durationMinutes} min`
               : "45min"}
           </Text>
         </View>
         <TouchableOpacity
-          style={styles.startButton}
+          className="bg-zinc-400/40 dark:bg-violet-800 px-4 py-2 rounded-full flex-row gap-2 items-center"
           onPress={() => onStartPress(routine)}
         >
-          <Ionicons name="play" size={20} color="white" />
-          <Text style={styles.startButtonText}>Iniciar</Text>
+          <Ionicons
+            name="play"
+            size={20}
+            className="text-violet-600 dark:text-zinc-300"
+          />
+          <Text className="font-bold text-lg text-violet-600 dark:text-zinc-300">
+            Iniciar
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
