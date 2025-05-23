@@ -10,17 +10,23 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Switch,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { Dimensions } from "react-native";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Logo from "../../../assets/guf.png";
+import Logo from "../../../assets/logoguf.png";
 
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../shared/types";
+import { useColorScheme } from "nativewind";
 
 type Props = StackScreenProps<RootStackParamList, "Login">;
 
 export default function Login({ navigation }: Props) {
+  const screenHeight = Dimensions.get("screen").height;
+  const { colorScheme } = useColorScheme();
+
   const [login, setLogin] = useState("usuario@example.com");
   const [password, setPassword] = useState("senha123");
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +59,6 @@ export default function Login({ navigation }: Props) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       Alert.alert("Google Login", "Simulando login com o Google...");
-      // navigation.replace('MainApp'); // Se necessário, direciona para a tela principal
     } catch (error) {
       console.error("Erro durante o login com Google:", error);
       Alert.alert(
@@ -73,21 +78,25 @@ export default function Login({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeAreaContainer}>
+    <SafeAreaView className="flex-1 bg-zinc-200 dark:bg-zinc-900">
       <KeyboardAvoidingView
-        style={styles.contentContainer}
+        className="flex-1 items-center justify-end mb-6 px-6"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        <View style={styles.top}>
-          <Image source={Logo} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.welcomeText}>
-            Bem-vindo de volta ao seu espaço de evolução.
+        <View className="items-center mb-6 w-full">
+          <Image
+            source={Logo}
+            className="w-[180] h-[120] mb-6"
+            resizeMode="contain"
+          />
+          <Text className="text-2xl font-bold text-center w-2/3 dark:text-zinc-400">
+            Bem-vindo ao seu espaço de evolução.
           </Text>
         </View>
 
         <TextInput
-          style={styles.input}
+          className="w-full dark:bg-white/5 dark:text-zinc-100 bg-black/5 py-4 px-6 rounded-full mb-4"
           placeholder="E-mail ou Usuário"
           value={login}
           onChangeText={setLogin}
@@ -97,7 +106,7 @@ export default function Login({ navigation }: Props) {
         />
 
         <TextInput
-          style={styles.input}
+          className="w-full dark:bg-white/5 dark:text-zinc-100 bg-black/5 py-4 px-6 rounded-full text-black"
           placeholder="Senha"
           secureTextEntry={true}
           value={password}
@@ -105,145 +114,54 @@ export default function Login({ navigation }: Props) {
           editable={!isLoading}
         />
 
-        <View style={{ width: "100%", alignItems: "flex-end" }}>
-          <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+        <View
+          className="flex-row mt-8 gap-4 ml-auto"
+          style={{ marginBottom: screenHeight * 0.2 }}
+        >
+          <TouchableOpacity
+            className="dark:bg-zinc-800 bg-black/5 flex-row gap-2 p-4 rounded-full"
+            onPress={handleGoogleLogin}
+            disabled={isLoading}
+          >
+            <AntDesign
+              name="google"
+              size={22}
+              color={colorScheme == "dark" ? "white" : "black"}
+            />
+            <Text className="dark:text-zinc-50">Logar com o Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-row items-center gap-2 bg-violet-800 p-4 ml-auto  rounded-full"
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
+            <Text className="text-zinc-50 font-bold">Entrar</Text>
+            <Ionicons name="arrow-forward" size={22} color={"white"} />
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={handleLogin}
-          disabled={isLoading}
-        >
-          <Text style={styles.loginButtonText}>Entrar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.googleButton}
-          onPress={handleGoogleLogin}
-          disabled={isLoading}
-        >
-          <AntDesign
-            name="google"
-            size={24}
-            color="#EA4335"
-            style={styles.googleIcon}
-          />
-          <Text style={styles.googleButtonText}>Logar com o Google</Text>
-        </TouchableOpacity>
-
-        <View style={styles.signupContainer}>
-          <Text style={styles.signupText}>Não possui conta?</Text>
+        <View className="flex-row gap-2">
+          <Text className="dark:text-zinc-50">Não possui conta?</Text>
           <TouchableOpacity onPress={handleForgotPassword}>
-            <Text style={styles.signupLink}>Cadastre-se</Text>
+            <Text className="text-violet-700 font-bold">Cadastre-se</Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <Text className="mt-2 dark:text-zinc-500">Esqueceu a senha?</Text>
+        </TouchableOpacity>
 
         {isLoading && (
-          <View style={styles.loadingOverlay}>
+          <View className="bg-zinc-50 dark:bg-zinc-900 justify-center items-center z-50 absolute left-0 bottom-0 top-0 right-0">
+            <Image
+              source={Logo}
+              className="w-[180] h-[120] mb-6"
+              resizeMode="contain"
+            />
             <ActivityIndicator size="large" color="#541cb6" />
-            <Text style={{ marginTop: 10, fontSize: 16, color: "#541cb6" }}>
-              Carregando...
-            </Text>
           </View>
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeAreaContainer: {
-    flex: 1,
-    backgroundColor: "#f8f8f8",
-  },
-  contentContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  top: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  logo: {
-    width: 200,
-    height: 90,
-    marginBottom: 20,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000",
-    textAlign: "center",
-    marginTop: 5,
-  },
-  input: {
-    width: "100%",
-    height: 50,
-    borderRadius: 8,
-    marginTop: 10,
-    paddingHorizontal: 15,
-    backgroundColor: "#00000010",
-    fontSize: 16,
-  },
-  loginButton: {
-    backgroundColor: "#541cb6",
-    paddingVertical: 15,
-    borderRadius: 8,
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  loginButtonText: {
-    color: "white",
-    fontWeight: "500",
-    fontSize: 18,
-  },
-  googleButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 8,
-    paddingVertical: 12,
-    width: "100%",
-    justifyContent: "center",
-    marginTop: 10,
-    backgroundColor: "#00000010",
-  },
-  googleIcon: {
-    marginRight: 10,
-  },
-  googleButtonText: {
-    fontSize: 16,
-    color: "#555",
-    fontWeight: "500",
-  },
-  forgotPasswordText: {
-    marginTop: 5,
-    color: "#541cb6",
-    fontSize: 14,
-  },
-  signupContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 16,
-  },
-  signupText: {
-    color: "#333",
-    marginRight: 8,
-  },
-  signupLink: {
-    color: "#541cb6",
-    fontWeight: "bold",
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(255, 255, 255, 0.93)",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1000,
-  },
-});

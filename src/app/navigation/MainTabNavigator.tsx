@@ -9,9 +9,12 @@ import FeedScreen from "../../features/feed/screens/feed";
 import GroupsScreen from "../../features/groups/screens/GroupsScreen";
 import ContaScreen from "../../features/auth/screens/conta";
 
+import { useColorScheme } from "react-native";
+
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function MainTab() {
+  const theme = useColorScheme();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -54,7 +57,12 @@ export default function MainTab() {
         },
         tabBarActiveTintColor: "#541cb6",
         tabBarInactiveTintColor: "gray",
-        tabBarStyle: styles.tabBarStyle,
+        tabBarStyle: [
+          styles.tabBarStyle,
+          theme === "dark"
+            ? { backgroundColor: "#09090b" }
+            : { backgroundColor: "#d4d4d8" },
+        ],
         tabBarLabelStyle: styles.tabBarLabelStyle,
         tabBarShowLabel: false,
         headerShown: false,
@@ -71,7 +79,6 @@ export default function MainTab() {
 
 const styles = StyleSheet.create({
   tabBarStyle: {
-    backgroundColor: "#e9ebee",
     borderTopWidth: 0,
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,

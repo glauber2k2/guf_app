@@ -16,8 +16,8 @@ import { RootStackParamList } from "../../../shared/types";
 type ContaScreenNavigationProp = NavigationProp<RootStackParamList, "MainTab">;
 
 const MOCK_USER_DATA = {
-  name: "João Silva",
-  email: "joao.silva@example.com",
+  name: "Glauber Monteiro",
+  email: "glauber.monteiro@example.com",
   profilePicture:
     "https://avatars.githubusercontent.com/u/103267667?s=400&u=8fe0b80c48948ddaf1989dac827909d961f091dd&v=4",
 };

@@ -19,7 +19,6 @@ import {
   type NavigationProp,
   useFocusEffect,
 } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList, Routine } from "../../../shared/types";
 import { STORAGE_KEY } from "../../../shared/constants";
@@ -93,7 +92,7 @@ export default function TreinosScreen() {
   }, [routines, isLoading]);
 
   const handleNewWorkout = () => {
-    Alert.alert("Novo Treino", "Iniciando um novo treino!");
+    navigation.navigate("WorkoutInProgress", {});
   };
 
   const handleAddRoutine = () => {
@@ -145,99 +144,95 @@ export default function TreinosScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={globalStyles.loadingContainer}>
+      <View style={globalStyles.loadingContainer}>
         <ActivityIndicator size="large" color="#541cb6" />
         <Text style={globalStyles.loadingText}>Carregando suas rotinas...</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={globalStyles.safeArea}>
-      <ScrollView
-        style={globalStyles.container}
-        contentContainerStyle={{
-          justifyContent: "flex-start",
-          paddingBottom: 20,
-        }}
+    <ScrollView
+      className="flex-1 bg-zinc-200 dark:bg-zinc-900 p-6"
+      contentContainerStyle={{
+        justifyContent: "flex-start",
+        paddingBottom: 20,
+      }}
+    >
+      <View className="my-6">
+        <Text className="dark:text-zinc-300 text-4xl font-bold text-center">
+          Seus Treinos
+        </Text>
+        <Text className="dark:text-zinc-50 opacity-50 text-center">
+          Gerencie suas rotinas e comece a treinar!
+        </Text>
+      </View>
+
+      <TouchableOpacity
+        className="bg-violet-800 p-5 rounded-full flex-row items-center justify-center gap-2"
+        onPress={handleNewWorkout}
       >
-        <View style={globalStyles.header}>
-          <Text style={globalStyles.title}>Seus Treinos</Text>
-          <Text style={globalStyles.subtitle}>
-            Gerencie suas rotinas e comece a treinar!
-          </Text>
-        </View>
+        <Ionicons name="play-outline" size={24} color="white" />
+        <Text className="text-zinc-50 text-xl font-bold">
+          Iniciar Novo Treino
+        </Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity
-          style={globalStyles.newWorkoutButton}
-          onPress={handleNewWorkout}
-        >
-          <Ionicons name="play-outline" size={24} color="white" />
-          <Text style={globalStyles.newWorkoutButtonText}>
-            Iniciar Novo Treino
-          </Text>
+      <View className="mt-10 flex-row justify-between">
+        <Text className="dark:text-zinc-300 font-medium text-xl">
+          Minhas Rotinas
+        </Text>
+        <TouchableOpacity onPress={handleAddRoutine}>
+          <Ionicons name="add" size={20} color="grey" />
         </TouchableOpacity>
+      </View>
 
-        <View style={styles.routinesHeader}>
-          <Text style={styles.routinesTitle}>Minhas Rotinas</Text>
-          <TouchableOpacity
-            style={globalStyles.addRoutineButton}
-            onPress={handleAddRoutine}
-          >
-            <Ionicons name="add" size={20} color="black" />
-          </TouchableOpacity>
-        </View>
+      {!routines.length === 0 ? (
+        <Text style={styles.emptyRoutinesText}>
+          Nenhuma rotina cadastrada ainda. Crie uma!
+        </Text>
+      ) : (
+        <FlatList
+          data={routines}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <RoutineCard
+              routine={item as any}
+              onPress={handleRoutinePress}
+              onStartPress={handleRoutinePress}
+              onOptionsPress={handleOptionsPress}
+            />
+          )}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalRoutineList}
+        />
+      )}
 
-        {routines.length === 0 ? (
-          <Text style={styles.emptyRoutinesText}>
-            Nenhuma rotina cadastrada ainda. Crie uma!
-          </Text>
-        ) : (
-          <FlatList
-            data={routines}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <RoutineCard
-                routine={item as any}
-                onPress={handleRoutinePress}
-                onStartPress={handleRoutinePress}
-                onOptionsPress={handleOptionsPress}
-              />
-            )}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalRoutineList}
-          />
-        )}
-
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={optionsModalVisible}
-          onRequestClose={() => setOptionsModalVisible(false)}
-        >
-          <View style={globalStyles.centeredView}>
-            <View style={globalStyles.optionsModalView}>
-              <TouchableOpacity
-                style={globalStyles.optionButton}
-                onPress={handleEditOption}
-              >
-                <Text style={globalStyles.optionButtonText}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  globalStyles.optionButton,
-                  globalStyles.optionButtonLast,
-                ]}
-                onPress={handleDeleteOption}
-              >
-                <Text style={globalStyles.optionButtonTextDelete}>Deletar</Text>
-              </TouchableOpacity>
-            </View>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={optionsModalVisible}
+        onRequestClose={() => setOptionsModalVisible(false)}
+      >
+        <View style={globalStyles.centeredView}>
+          <View style={globalStyles.optionsModalView}>
+            <TouchableOpacity
+              style={globalStyles.optionButton}
+              onPress={handleEditOption}
+            >
+              <Text style={globalStyles.optionButtonText}>Editar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[globalStyles.optionButton, globalStyles.optionButtonLast]}
+              onPress={handleDeleteOption}
+            >
+              <Text style={globalStyles.optionButtonTextDelete}>Deletar</Text>
+            </TouchableOpacity>
           </View>
-        </Modal>
-      </ScrollView>
-    </SafeAreaView>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 }
 

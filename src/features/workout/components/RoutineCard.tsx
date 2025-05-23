@@ -29,7 +29,6 @@ interface RoutineCardProps {
 
 const RoutineCard: React.FC<RoutineCardProps> = ({
   routine,
-  onPress,
   onStartPress,
   onOptionsPress,
 }) => {
@@ -37,7 +36,6 @@ const RoutineCard: React.FC<RoutineCardProps> = ({
     <View style={styles.cardContainer}>
       <View style={styles.headerContainer}>
         <Text style={styles.routineName}>{routine.name}</Text>
-        {/* Subtítulo de grupos musculares: exibe "Personalizado" se não houver um grupo definido */}
         <Text style={styles.muscleGroupsSubtitle}>
           {routine.muscleGroups || "Personalizado"}
         </Text>
@@ -60,7 +58,7 @@ const RoutineCard: React.FC<RoutineCardProps> = ({
         </View>
         <TouchableOpacity
           style={styles.startButton}
-          onPress={() => onStartPress(routine)} // Usa onStartPress para o botão
+          onPress={() => onStartPress(routine)}
         >
           <Ionicons name="play" size={20} color="white" />
           <Text style={styles.startButtonText}>Iniciar</Text>
