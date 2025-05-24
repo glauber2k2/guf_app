@@ -392,7 +392,7 @@ const WorkoutInProgressScreen: React.FC = () => {
         keyExtractor={(item) => item.id}
         ListFooterComponent={<View style={{ height: 100 }} />}
         renderItem={({ item }) => (
-          <View className="dark:bg-zinc-900 bg-zinc-200 mb-3 p-4 rounded-3xl">
+          <View className="dark:bg-zinc-900 bg-zinc-200 p-4 rounded-3xl mb-3">
             <View className="flex-row items-center gap-4">
               <Image
                 source={{ uri: item.imageUrl }}
@@ -419,7 +419,7 @@ const WorkoutInProgressScreen: React.FC = () => {
               onChangeText={(text) => handleUpdateNotes(item.id, text)}
             />
 
-            <View className="justify-between flex-row py-2 px-8 border-b dark:border-zinc-700 border-zinc-400">
+            <View className="justify-between flex-row py-2 px-8  dark:border-zinc-700 border-zinc-400">
               <Text className="dark:text-zinc-200 font-bold text-lg w-1/4">
                 S
               </Text>
@@ -484,10 +484,11 @@ const WorkoutInProgressScreen: React.FC = () => {
                   />
                 </View>
               )}
+              //TODO: mb-[0.1] por causa que ao testar (apenas no emulador ate entao) vazava parte da view vermelha por baixo de algumas rows.
               renderHiddenItem={({ item: set, index: setIndex }) => (
-                <View className="">
+                <View className="mb-[0.1] bg-red-500 overflow-hidden">
                   <TouchableOpacity
-                    className=""
+                    className=" flex-row h-full items-center justify-end px-6"
                     onPress={() => handleDeleteSet(item.id, setIndex)}
                   >
                     <Ionicons name="trash-bin" size={24} color="white" />
@@ -496,7 +497,7 @@ const WorkoutInProgressScreen: React.FC = () => {
               )}
               disableRightSwipe={true}
               rightOpenValue={-75}
-              tension={-1}
+              tension={40}
               friction={10}
               swipeToOpenPercent={10}
               swipeToClosePercent={10}
