@@ -179,7 +179,7 @@ export default function TreinosScreen() {
       </TouchableOpacity>
 
       <View className="mt-10 flex-row justify-between">
-        <Text className="dark:text-zinc-300 font-medium text-xl">
+        <Text className="dark:text-zinc-300 font-medium text-xl mb-2">
           Minhas Rotinas
         </Text>
         <TouchableOpacity onPress={handleAddRoutine}>

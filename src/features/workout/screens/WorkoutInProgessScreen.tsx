@@ -5,9 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  StyleSheet,
   SafeAreaView,
-  Platform,
   Image,
   Modal,
 } from "react-native";
@@ -327,28 +325,50 @@ const WorkoutInProgressScreen: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <SafeAreaView className="dark:bg-zinc-800 bg-zinc-100 flex-1 ">
+      <View className="dark:bg-zinc-900 bg-zinc-200 flex-row items-center p-3 gap-4 mb-6 ">
         <TouchableOpacity
           onPress={async () => {
             await saveWorkoutState();
             navigation.goBack();
           }}
-          style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24} color="#333" />
+          <Ionicons
+            name="chevron-back"
+            size={24}
+            className="dark:text-zinc-300"
+          />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>
+        <Text className="dark:text-zinc-300 font-bold text-2xl">
           {selectedRoutine?.name || "Treino Livre"}
         </Text>
-        <View style={{ width: 24 }} />
+
+        <TouchableOpacity
+          className="bg-violet-700 py-3 px-4 rounded-full ml-auto flex-row gap-2"
+          onPress={() => setAddExerciseModalVisible(true)}
+        >
+          <Ionicons
+            name="add-circle-sharp"
+            size={24}
+            className="text-purple-200"
+          />
+          <Text className="text-purple-200 font-bold text-lg">Exercício</Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{formatTime(elapsedTime)}</Text>
-        <View style={styles.timerControls}>
+      <View className="absolute bottom-6 self-center py-4 px-6 rounded-full gap-4 bg-violet-800 z-50 flex-row items-center justify-between">
+        <Text className="text-2xl font-bold text-purple-100">
+          {formatTime(elapsedTime)}
+        </Text>
+        <View className="flex-row gap-2">
           <TouchableOpacity
-            style={styles.timerButton}
+            className="bg-purple-50/10 justify-center p-4 rounded-full"
+            onPress={handleResetTimer}
+          >
+            <Ionicons name="refresh" size={24} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-purple-50/10 justify-center p-4 rounded-full"
             onPress={handleStartStopTimer}
           >
             <Ionicons
@@ -358,54 +378,60 @@ const WorkoutInProgressScreen: React.FC = () => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.timerButton}
-            onPress={handleResetTimer}
+            className="bg-purple-50/10 justify-center p-4 rounded-full"
+            onPress={handleFinishWorkout}
           >
-            <Ionicons name="refresh" size={24} color="white" />
+            <Ionicons name="checkmark-done" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {!selectedRoutine && (
-        <TouchableOpacity
-          style={styles.addExerciseButton}
-          onPress={() => setAddExerciseModalVisible(true)}
-        >
-          <Ionicons name="add-circle-outline" size={24} color="white" />
-          <Text style={styles.addExerciseButtonText}>Adicionar Exercício</Text>
-        </TouchableOpacity>
-      )}
-
       <FlatList
+        className="px-3"
         data={workoutExercises}
         keyExtractor={(item) => item.id}
+        ListFooterComponent={<View style={{ height: 100 }} />}
         renderItem={({ item }) => (
-          <View style={styles.exerciseCard}>
-            <View style={styles.exerciseCardHeader}>
+          <View className="dark:bg-zinc-900 bg-zinc-200 mb-3 p-4 rounded-3xl">
+            <View className="flex-row items-center gap-4">
               <Image
                 source={{ uri: item.imageUrl }}
-                style={styles.exerciseImage}
+                className="w-14 h-14 bg-zinc-400 rounded-2xl"
               />
-              <Text style={styles.exerciseCardTitle}>{item.name}</Text>
-              <TouchableOpacity style={styles.moreOptionsButton}>
-                <Ionicons name="ellipsis-horizontal" size={24} color="#555" />
+              <Text className="text-2xl font-bold dark:text-zinc-300">
+                {item.name}
+              </Text>
+              <TouchableOpacity className=" ml-auto">
+                <Ionicons
+                  name="ellipsis-horizontal"
+                  size={24}
+                  className="dark:text-zinc-300"
+                />
               </TouchableOpacity>
             </View>
 
             <TextInput
-              style={styles.notesInput}
+              className="dark:text-zinc-200 "
               placeholder="Adicionar anotações ou descrição..."
-              placeholderTextColor="#999"
+              placeholderTextColor="grey"
               multiline
               value={item.notes}
               onChangeText={(text) => handleUpdateNotes(item.id, text)}
             />
 
-            <View style={[styles.setRow, { backgroundColor: "#00000010" }]}>
-              <Text style={styles.setNumber}>N</Text>
-              <Text style={styles.setFieldHeader}>Anterior</Text>
-              <Text style={styles.setFieldHeader}>KG</Text>
-              <Text style={styles.setFieldHeader}>Reps</Text>
+            <View className="justify-between flex-row py-2 px-8 border-b dark:border-zinc-700 border-zinc-400">
+              <Text className="dark:text-zinc-200 font-bold text-lg w-1/4">
+                S
+              </Text>
+              <Text className="dark:text-zinc-200 font-bold text-lg w-1/4 text-center">
+                Anterior
+              </Text>
+              <Text className="dark:text-zinc-200 font-bold text-lg w-1/4 text-center">
+                Kg
+              </Text>
+              <Text className="dark:text-zinc-200 font-bold text-lg w-1/4 text-center">
+                Reps
+              </Text>
             </View>
 
             <SwipeListView
@@ -415,35 +441,28 @@ const WorkoutInProgressScreen: React.FC = () => {
               }
               renderItem={({ item: set, index: setIndex }) => (
                 <View
-                  style={[
-                    styles.setRow,
-                    setIndex % 2 === 1 ? { backgroundColor: "#00000010" } : {},
-                    { backgroundColor: "white" },
-                  ]}
+                  className={` justify-between flex-row py-2 px-8 items-center
+                    ${
+                      setIndex % 2 === 1
+                        ? "dark:bg-zinc-800 bg-zinc-300"
+                        : "dark:bg-zinc-900 bg-zinc-200"
+                    } `}
                 >
-                  <Text style={styles.setNumber}>{set.setNumber}.</Text>
+                  <Text className="dark:text-zinc-400 text-lg  w-1/4">
+                    {set.setNumber}.
+                  </Text>
+                  <Text className="dark:text-zinc-400 text-lg text-center w-1/4">
+                    {set.previousReps || set.previousKg
+                      ? `${set.previousReps || "N/A"} x ${
+                          set.previousKg || "0"
+                        }kg`
+                      : "N/A"}
+                  </Text>
                   <TextInput
-                    style={styles.setFieldInput}
-                    placeholder={
-                      set.previousReps || set.previousKg
-                        ? `${set.previousReps || "N/A"} x ${
-                            set.previousKg || "0"
-                          }kg`
-                        : "N/A"
-                    }
-                    placeholderTextColor="#999"
-                    value={
-                      set.previousReps || set.previousKg
-                        ? `${set.previousReps || "N/A"} x ${
-                            set.previousKg || "0"
-                          }kg`
-                        : ""
-                    }
-                    editable={false}
-                  />
-                  <TextInput
-                    style={styles.setFieldInput}
-                    placeholder="KG"
+                    multiline
+                    numberOfLines={1}
+                    className="dark:text-zinc-400 text-lg text-center w-1/4"
+                    placeholder="0"
                     placeholderTextColor="#999"
                     value={set.kg}
                     onChangeText={(text) =>
@@ -452,8 +471,10 @@ const WorkoutInProgressScreen: React.FC = () => {
                     keyboardType="numeric"
                   />
                   <TextInput
-                    style={styles.setFieldInput}
-                    placeholder="Reps"
+                    multiline
+                    numberOfLines={1}
+                    className="dark:text-zinc-400 text-lg text-center w-1/4"
+                    placeholder="0"
                     placeholderTextColor="#999"
                     value={set.reps}
                     onChangeText={(text) =>
@@ -464,9 +485,9 @@ const WorkoutInProgressScreen: React.FC = () => {
                 </View>
               )}
               renderHiddenItem={({ item: set, index: setIndex }) => (
-                <View style={styles.rowBack}>
+                <View className="">
                   <TouchableOpacity
-                    style={[styles.backBtn, styles.backRightBtn]}
+                    className=""
                     onPress={() => handleDeleteSet(item.id, setIndex)}
                   >
                     <Ionicons name="trash-bin" size={24} color="white" />
@@ -479,26 +500,23 @@ const WorkoutInProgressScreen: React.FC = () => {
               friction={10}
               swipeToOpenPercent={10}
               swipeToClosePercent={10}
-              // directionalLockEnabled={true} // Removido para evitar erro de tipagem
             />
             <TouchableOpacity
-              style={styles.addSetButton}
+              className="dark:bg-zinc-800 bg-zinc-300 mt-4 rounded-full items-center flex-row justify-center gap-2 p-4"
               onPress={() => handleAddSet(item.id)}
             >
-              <Ionicons name="add-circle-outline" size={20} color="#6200ee" />
-              <Text style={styles.addSetButtonText}>Adicionar Série</Text>
+              <Ionicons
+                name="add-circle-outline"
+                size={28}
+                className="dark:text-violet-500 text-violet-700"
+              />
+              <Text className="dark:text-violet-500 text-violet-700 text-xl font-bold">
+                Adicionar Série
+              </Text>
             </TouchableOpacity>
           </View>
         )}
-        contentContainerStyle={styles.exerciseListContent}
       />
-
-      <TouchableOpacity
-        style={styles.finishButton}
-        onPress={handleFinishWorkout}
-      >
-        <Text style={styles.finishButtonText}>Concluir Treino</Text>
-      </TouchableOpacity>
 
       <Modal
         animationType="fade"
@@ -506,25 +524,30 @@ const WorkoutInProgressScreen: React.FC = () => {
         visible={isCustomAlertVisible}
         onRequestClose={() => setCustomAlertVisible(false)}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>{customAlertTitle}</Text>
-            <Text style={styles.modalText}>{customAlertMessage}</Text>
-            <View style={styles.modalButtonContainer}>
+        <View className="flex-1 justify-center items-center">
+          <View className="bg-white rounded-lg shadow-md w-4/5 max-w-md p-6">
+            <Text className="text-xl font-bold mb-2">{customAlertTitle}</Text>
+            <Text className="mb-4">{customAlertMessage}</Text>
+            <View className="flex-row justify-end">
               {customAlertActions.map((action, index) => (
                 <TouchableOpacity
                   key={index}
-                  style={[
-                    styles.modalButton,
-                    action.style === "cancel"
-                      ? styles.modalCancelButton
-                      : action.style === "destructive"
-                      ? styles.modalDestructiveButton
-                      : styles.modalConfirmButton,
-                  ]}
                   onPress={action.onPress}
+                  className={`rounded-md px-4 py-2 ml-2 ${
+                    action.style === "cancel"
+                      ? "bg-gray-300"
+                      : action.style === "destructive"
+                      ? "bg-red-500"
+                      : "bg-blue-500"
+                  }`}
                 >
-                  <Text style={styles.modalButtonText}>{action.text}</Text>
+                  <Text
+                    className={`text-white font-bold ${
+                      action.style === "cancel" ? "text-gray-700" : ""
+                    }`}
+                  >
+                    {action.text}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -534,362 +557,60 @@ const WorkoutInProgressScreen: React.FC = () => {
 
       <Modal
         animationType="slide"
-        transparent={true}
         visible={isAddExerciseModalVisible}
+        transparent
         onRequestClose={() => setAddExerciseModalVisible(false)}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Adicionar Novo Exercício</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Nome do Exercício"
-              placeholderTextColor="#999"
-              value={newExerciseName}
-              onChangeText={setNewExerciseName}
-            />
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Número de Séries (ex: 3)"
-              placeholderTextColor="#999"
-              keyboardType="numeric"
-              value={newExerciseSets}
-              onChangeText={setNewExerciseSets}
-            />
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Repetições (ex: 10-12)"
-              placeholderTextColor="#999"
-              value={newExerciseReps}
-              onChangeText={setNewExerciseReps}
-            />
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalCancelButton]}
-                onPress={() => setAddExerciseModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.modalConfirmButton]}
-                onPress={handleAddNewExercise}
-              >
-                <Text style={styles.modalButtonText}>Adicionar</Text>
-              </TouchableOpacity>
-            </View>
+        <View className="p-6 bg-zinc-200 dark:bg-zinc-900 flex-1 w-full ">
+          <View className="flex-row items-center gap-4 mb-6">
+            <TouchableOpacity onPress={() => setAddExerciseModalVisible(false)}>
+              <Ionicons
+                name="chevron-down"
+                size={22}
+                className="dark:text-zinc-100"
+              />
+            </TouchableOpacity>
+
+            <Text className="text-xl dark:text-zinc-100">
+              Exercicio Personalizado
+            </Text>
+
+            <TouchableOpacity
+              onPress={handleAddNewExercise}
+              className="bg-gray-300 dark:bg-violet-700 px-6 py-3 ml-auto rounded-full"
+            >
+              <Text className="font-bold ml-auto text-violet-700 dark:text-violet-100">
+                Salvar
+              </Text>
+            </TouchableOpacity>
           </View>
+
+          <TextInput
+            className="dark:bg-zinc-800 mt-6 rounded-full px-6 py-4 text-lg bg-zinc-300 dark:text-zinc-100"
+            placeholder="Nome do Exercício"
+            placeholderTextColor="#999"
+            value={newExerciseName}
+            onChangeText={setNewExerciseName}
+          />
+          <TextInput
+            className="dark:bg-zinc-800 mt-6 rounded-full px-6 py-4 text-lg bg-zinc-300 dark:text-zinc-100"
+            placeholder="Número de Séries (ex: 3)"
+            placeholderTextColor="#999"
+            keyboardType="numeric"
+            value={newExerciseSets}
+            onChangeText={setNewExerciseSets}
+          />
+          <TextInput
+            className="dark:bg-zinc-800 mt-6 rounded-full px-6 py-4 text-lg bg-zinc-300 dark:text-zinc-100"
+            placeholder="Repetições (ex: 10-12)"
+            placeholderTextColor="#999"
+            value={newExerciseReps}
+            onChangeText={setNewExerciseReps}
+          />
         </View>
       </Modal>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f0f2f5",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#333",
-  },
-  timerContainer: {
-    backgroundColor: "#6200ee",
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-    borderRadius: 8,
-    marginHorizontal: 16,
-    marginTop: 16,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-  timerText: {
-    fontSize: 48,
-    fontWeight: "bold",
-    color: "#fff",
-    marginBottom: 10,
-  },
-  timerControls: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  timerButton: {
-    backgroundColor: "rgba(255,255,255,0.2)",
-    padding: 12,
-    borderRadius: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-    height: 60,
-  },
-  addExerciseButton: {
-    backgroundColor: "#6200ee",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 8,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-  addExerciseButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginLeft: 8,
-  },
-  exerciseListContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-  },
-  exerciseCard: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  exerciseCardHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  exerciseImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 12,
-    backgroundColor: "#e0e0e0",
-  },
-  exerciseCardTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-    flex: 1,
-  },
-  moreOptionsButton: {
-    padding: 5,
-  },
-  notesInput: {
-    backgroundColor: "#f9f9f9",
-    borderRadius: 8,
-    padding: 10,
-    fontSize: 14,
-    color: "#333",
-    marginBottom: 16,
-    minHeight: 60,
-    textAlignVertical: "top",
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-  setRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-    paddingVertical: 6,
-    paddingHorizontal: 5,
-    borderTopWidth: 1,
-    borderColor: "#00000005",
-  },
-  setNumber: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#555",
-    width: 30,
-    textAlign: "center",
-  },
-  setFieldHeader: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#777",
-    flex: 1,
-    marginHorizontal: 5,
-    textAlign: "center",
-  },
-  setFieldInput: {
-    backgroundColor: "#fff",
-    borderRadius: 6,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    fontSize: 14,
-    color: "#333",
-    flex: 1,
-    marginHorizontal: 5,
-    textAlign: "center",
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  addSetButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
-    marginTop: 10,
-    borderRadius: 8,
-    backgroundColor: "#f0f2f5",
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-  addSetButtonText: {
-    color: "#6200ee",
-    fontSize: 14,
-    fontWeight: "bold",
-    marginLeft: 5,
-  },
-  rowBack: {
-    alignItems: "center",
-    backgroundColor: "#db4045",
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    borderRadius: 6,
-    marginBottom: 8,
-    paddingRight: 10,
-  },
-  backBtn: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 75,
-    height: "100%",
-  },
-  backRightBtn: {
-    backgroundColor: "#db4045",
-    right: 0,
-    borderTopRightRadius: 6,
-    borderBottomRightRadius: 6,
-  },
-  backTextWhite: {
-    color: "#FFF",
-    marginTop: 5,
-    fontSize: 12,
-  },
-  finishButton: {
-    backgroundColor: "#03dac6",
-    paddingVertical: 16,
-    marginHorizontal: 16,
-    marginBottom: 20,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  finishButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    width: "80%",
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: "#333",
-  },
-  modalText: {
-    fontSize: 16,
-    color: "#555",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  modalInput: {
-    width: "100%",
-    backgroundColor: "#f0f0f0",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-    color: "#333",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-  },
-  modalButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-    marginTop: 10,
-  },
-  modalButton: {
-    borderRadius: 10,
-    padding: 12,
-    elevation: 2,
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  modalCancelButton: {
-    backgroundColor: "#db4045",
-  },
-  modalConfirmButton: {
-    backgroundColor: "#6200ee",
-  },
-  modalDestructiveButton: {
-    backgroundColor: "#db4045",
-  },
-  modalButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: 16,
-  },
-});
 
 export default WorkoutInProgressScreen;
