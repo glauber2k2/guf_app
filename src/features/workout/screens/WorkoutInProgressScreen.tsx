@@ -13,6 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SwipeListView } from "react-native-swipe-list-view";
+import WorkoutHistoryService from "../../../services/WorkoutHistoryService";
 
 interface Exercise {
   id: string;
@@ -28,7 +29,7 @@ export interface Routine {
   exercises: Exercise[];
 }
 
-interface WorkoutExercise {
+export interface WorkoutExercise {
   id: string;
   name: string;
   imageUrl: string;
@@ -232,7 +233,7 @@ const WorkoutInProgressScreen: React.FC = () => {
   const handleFinishWorkout = () => {
     showCustomAlert(
       "Concluir Treino",
-      "Deseja realmente concluir este treino?",
+      "Deseja realmente concluir e salvar este treino no seu histórico?",
       [
         {
           text: "Cancelar",
@@ -240,12 +241,35 @@ const WorkoutInProgressScreen: React.FC = () => {
           style: "cancel",
         },
         {
-          text: "Concluir",
+          text: "Concluir e Salvar",
           onPress: async () => {
             setCustomAlertVisible(false);
-            await saveWorkoutState(true);
-            showCustomAlert("Treino Concluído", "Seu treino foi registrado!");
-            navigation.goBack();
+            setTimerRunning(false); // Para o timer
+
+            try {
+              // AQUI ESTÁ A LIGAÇÃO QUE FALTAVA:
+              // Chamando o serviço para salvar no histórico
+              await WorkoutHistoryService.addWorkoutToHistory({
+                routineName: selectedRoutine?.name || "Treino Livre",
+                elapsedTime: elapsedTime,
+                workoutExercises: workoutExercises,
+              });
+
+              // Limpa o treino em andamento do AsyncStorage
+              await AsyncStorage.removeItem(STORAGE_KEY_CURRENT_WORKOUT);
+
+              showCustomAlert(
+                "Treino Concluído!",
+                "Seu progresso foi salvo no histórico."
+              );
+              navigation.goBack();
+            } catch (error) {
+              console.error("Falha ao finalizar o treino:", error);
+              showCustomAlert(
+                "Erro",
+                "Não foi possível salvar o seu treino no histórico."
+              );
+            }
           },
         },
       ]
@@ -484,7 +508,7 @@ const WorkoutInProgressScreen: React.FC = () => {
                   />
                 </View>
               )}
-              //TODO: mb-[0.1] por causa que ao testar (apenas no emulador ate entao) vazava parte da view vermelha por baixo de algumas rows.
+              //TODO: amb-[0.1] por causa que ao testar (apenas no emulador ate entao) vazava parte da view vermelha por baixo de algumas rows.
               renderHiddenItem={({ item: set, index: setIndex }) => (
                 <View className="mb-[0.1] bg-red-500 overflow-hidden">
                   <TouchableOpacity

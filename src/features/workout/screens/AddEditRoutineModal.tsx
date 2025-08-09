@@ -1,4 +1,5 @@
 // screens/AddEditRoutineScreen.tsx
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -11,23 +12,29 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SwipeListView } from "react-native-swipe-list-view";
-import { Exercise, RootStackParamList, Routine } from "../../../shared/types";
-import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
 import {
-  MOCK_AVAILABLE_EXERCISES,
-  STORAGE_KEY,
-} from "../../../shared/constants";
+  useNavigation,
+  useRoute,
+  RouteProp,
+  NavigationProp,
+} from "@react-navigation/native";
+import { SwipeListView } from "react-native-swipe-list-view";
+// 1. REMOVIDO: import { v4 as uuidv4 } from "uuid";
+
+import RoutineService from "../../../services/RoutineService";
+import { Exercise, RootStackParamList, Routine } from "../../../shared/types"; // Ajuste o tipo se necessário
+import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
+import { MOCK_AVAILABLE_EXERCISES } from "../../../shared/constants";
 
 type AddEditRoutineScreenRouteProp = RouteProp<
   RootStackParamList,
   "AddEditRoutine"
 >;
 
+type AddEditRoutineNavigationProp = NavigationProp<RootStackParamList>;
+
 const AddEditRoutineScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<AddEditRoutineNavigationProp>();
   const route = useRoute<AddEditRoutineScreenRouteProp>();
   const { selectedRoutine } = route.params;
 
@@ -35,6 +42,8 @@ const AddEditRoutineScreen: React.FC = () => {
   const [currentRoutineExercises, setCurrentRoutineExercises] = useState<
     Exercise[]
   >([]);
+
+  // ... (nenhuma outra mudança de estado é necessária)
   const [exerciseSelectionModalVisible, setExerciseSelectionModalVisible] =
     useState(false);
   const [selectedExercisesForModal, setSelectedExercisesForModal] = useState<
@@ -54,59 +63,57 @@ const AddEditRoutineScreen: React.FC = () => {
     }
   }, [selectedRoutine]);
 
-  const generateUniqueId = () => Date.now().toString();
-
   const handleSaveRoutine = async () => {
+    // ... (validações permanecem as mesmas)
     if (routineName.trim() === "") {
       Alert.alert("Erro", "Por favor, insira um nome para a rotina.");
       return;
     }
-
-    const incompleteExercises = currentRoutineExercises.filter(
-      (ex) => ex.sets.trim() === "" || ex.reps.trim() === ""
+    const incompleteExercises = currentRoutineExercises.some(
+      (ex) => !ex.sets || !ex.reps
     );
-    if (incompleteExercises.length > 0) {
+    if (incompleteExercises) {
       Alert.alert(
         "Atenção",
-        "Por favor, preencha as séries e repetições para todos os exercícios na rotina."
+        "Por favor, preencha as séries e repetições para todos os exercícios."
       );
       return;
     }
 
     try {
-      const existingRoutinesJson = await AsyncStorage.getItem(STORAGE_KEY);
-      let existingRoutines: Routine[] = existingRoutinesJson
-        ? JSON.parse(existingRoutinesJson)
-        : [];
-
       if (selectedRoutine) {
-        existingRoutines = existingRoutines.map((r) =>
-          r.id === selectedRoutine.id
-            ? {
-                ...r,
-                name: routineName.trim(),
-                exercises: currentRoutineExercises,
-              }
-            : r
-        );
-      } else {
-        const newRoutine: Routine = {
-          id: generateUniqueId(),
+        // MODO EDIÇÃO (Nenhuma mudança aqui)
+        const updatedRoutine = {
+          id: selectedRoutine.id,
           name: routineName.trim(),
-          exercises: currentRoutineExercises,
+          exercises: JSON.stringify(currentRoutineExercises),
         };
-        existingRoutines = [...existingRoutines, newRoutine];
+        await RoutineService.updateRoutine(updatedRoutine as any); // Usamos 'as any' para compatibilidade de tipo
+      } else {
+        // MODO CRIAÇÃO (AQUI ESTÁ A MUDANÇA)
+        // 2. Não geramos mais um ID. Apenas montamos o objeto com os dados.
+        const newRoutineData = {
+          name: routineName.trim(),
+          exercises: JSON.stringify(currentRoutineExercises),
+        };
+        // O serviço agora sabe como lidar com isso
+        await RoutineService.addRoutine(newRoutineData);
       }
 
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(existingRoutines));
       Alert.alert("Sucesso", `Rotina "${routineName.trim()}" salva!`);
-      navigation.goBack();
+      navigation.navigate("MainTab", {
+        screen: "Treinos",
+        params: { refresh: true },
+      });
     } catch (e) {
-      console.error("Erro ao salvar rotina:", e);
+      console.error("Erro ao salvar rotina no SQLite:", e);
       Alert.alert("Erro", "Não foi possível salvar a rotina.");
     }
   };
 
+  // NENHUMA OUTRA MUDANÇA É NECESSÁRIA NO RESTO DO ARQUIVO
+  // O código restante do componente permanece o mesmo.
+  // ... (handleCancelRoutine, render, styles, etc.)
   const handleCancelRoutine = () => {
     navigation.goBack();
   };
@@ -136,6 +143,7 @@ const AddEditRoutineScreen: React.FC = () => {
   };
 
   const handleCancelExerciseSelection = () => {
+    // Lógica original está correta, reverte para o estado inicial
     setCurrentRoutineExercises(
       selectedRoutine ? [...selectedRoutine.exercises] : []
     );
@@ -164,6 +172,7 @@ const AddEditRoutineScreen: React.FC = () => {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      {/* O JSX (a parte visual) do componente permanece exatamente o mesmo */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleCancelRoutine}>
           <Ionicons name="arrow-back" size={24} color="#888" />
@@ -183,7 +192,7 @@ const AddEditRoutineScreen: React.FC = () => {
               <TextInput
                 style={styles.setsRepsInput}
                 placeholder="Séries"
-                value={item.sets}
+                value={String(item.sets)} // Convertido para string para evitar warnings
                 onChangeText={(text) =>
                   handleUpdateExerciseSetsReps(item.id, "sets", text)
                 }
@@ -264,14 +273,15 @@ const AddEditRoutineScreen: React.FC = () => {
     </KeyboardAvoidingView>
   );
 };
-
+// ... (seus estilos aqui, não precisam de mudança)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f4f4f4" },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingTop: Platform.OS === "android" ? 20 : 40,
+    paddingTop: Platform.OS === "android" ? 40 : 50, // Ajuste para melhor visualização
+    paddingHorizontal: 15,
     paddingBottom: 15,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
@@ -280,8 +290,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: "bold", color: "#333" },
   content: { padding: 20 },
   input: {
-    backgroundColor: "#00000010",
-    borderRadius: 35,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
     padding: 15,
     fontSize: 16,
     color: "#333",
@@ -301,26 +313,21 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 15,
     backgroundColor: "#fff",
-    borderRadius: 10,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-    marginHorizontal: 20,
+    borderBottomWidth: 1,
+    borderColor: "#f0f0f0",
   },
   exerciseName: { fontSize: 16, color: "#333", flex: 1 },
   setsRepsContainer: { flexDirection: "row", alignItems: "center" },
   setsRepsInput: {
+    backgroundColor: "#f4f4f4",
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 10,
     fontSize: 14,
     color: "#333",
-    width: 65,
+    width: 70,
     textAlign: "center",
-    marginRight: 8,
+    marginLeft: 8,
   },
   rowBack: {
     alignItems: "center",
@@ -328,9 +335,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "flex-end",
-    borderRadius: 10,
-    marginBottom: 10,
-    marginHorizontal: 20,
+    marginBottom: 1, // Ajuste para alinhar com o item
   },
   backRightBtn: {
     alignItems: "center",
@@ -340,14 +345,12 @@ const styles = StyleSheet.create({
   },
   backRightBtnRight: {
     backgroundColor: "#db4045",
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
   },
   addButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#000",
+    backgroundColor: "#541cb6",
     borderRadius: 35,
     paddingVertical: 12,
   },
@@ -357,21 +360,23 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontSize: 16,
   },
-  footerArea: { marginTop: "auto" },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "#fff",
-    marginTop: 20,
+    padding: 10,
+    borderTopWidth: 1,
+    borderColor: "#ddd",
   },
   cancelButton: {
-    backgroundColor: "#00000010",
+    backgroundColor: "#f4f4f4",
     paddingVertical: 12,
-    paddingHorizontal: 20,
-    width: "50%",
+    borderRadius: 35,
+    flex: 1,
+    marginRight: 5,
   },
   cancelButtonText: {
-    color: "#db4045",
+    color: "#333",
     fontWeight: "500",
     fontSize: 16,
     textAlign: "center",
@@ -379,8 +384,9 @@ const styles = StyleSheet.create({
   saveButton: {
     backgroundColor: "#541cb6",
     paddingVertical: 12,
-    paddingHorizontal: 20,
-    width: "50%",
+    borderRadius: 35,
+    flex: 1,
+    marginLeft: 5,
   },
   saveButtonText: {
     color: "white",

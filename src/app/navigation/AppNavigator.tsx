@@ -5,7 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 
 import MainTab from "./MainTabNavigator";
 import { RootStackParamList } from "../../shared/types";
-import WorkoutInProgressScreen from "../../features/workout/screens/WorkoutInProgessScreen";
+import WorkoutInProgressScreen from "../../features/workout/screens/WorkoutInProgressScreen";
 import AddEditRoutineScreen from "../../features/workout/screens/AddEditRoutineModal";
 import GroupsScreen from "../../features/groups/screens/GroupsScreen";
 import Login from "../../features/auth/screens/login";

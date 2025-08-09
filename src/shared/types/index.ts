@@ -1,11 +1,14 @@
 // src/types.ts
 
+// 1. ADICIONADO: Importar o tipo helper para navegadores aninhados
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
 // Definição do tipo Exercise
 export type Exercise = {
   id: string;
   name: string;
-  sets: string; // Pode ser number, mas string para input flexível
-  reps: string; // Pode ser number ou string (ex: '8-12', 'até a falha')
+  sets: string;
+  reps: string;
 };
 
 // Definição do tipo Routine
@@ -22,28 +25,36 @@ export type Group = {
   isPinned: boolean;
 };
 
-// Define os parâmetros esperados para cada rota no seu StackNavigator principal.
-// Qualquer tela que possa ser navegada diretamente (não apenas via tabs) deve estar aqui.
-export type RootStackParamList = {
-  Login: undefined; // Tela de login, sem parâmetros
-  MainTab: undefined; // A rota que encapsula o BottomTabNavigator
-  AddEditRoutine: { selectedRoutine: Routine | null }; // Tela de adicionar/editar rotina com parâmetro opcional
-  WorkoutInProgress: { selectedRoutine?: Routine }; // Tela de treino em andamento com a rotina selecionada
-  // As rotas abaixo são acessíveis via tabs, mas também podem ser navegadas diretamente pelo Stack se necessário.
-  // Se elas forem *apenas* acessadas via tabs, você pode removê-las daqui para manter o RootStackParamList mais limpo.
-  Treinos: undefined;
+// ===================================================================
+// ALTERAÇÕES PRINCIPAIS ABAIXO
+// ===================================================================
+
+
+// Define os parâmetros esperados para cada rota dentro do seu BottomTabNavigator.
+export type BottomTabParamList = {
+  // 2. ALTERADO: A tela Treinos agora pode receber um parâmetro opcional 'refresh'.
+  Treinos: { refresh?: boolean }; 
   Feed: undefined;
   Conta: undefined;
   Groups: undefined;
 };
 
-// Define os parâmetros esperados para cada rota dentro do seu BottomTabNavigator.
-// Apenas as rotas que aparecem como abas na parte inferior do aplicativo devem estar aqui.
-export type BottomTabParamList = {
-  Treinos: undefined; // Aba de Treinos
-  Feed: undefined;    // Aba de Feed
-  Conta: undefined;   // Aba de Conta
-  Groups: undefined;  // Aba de Grupos
+
+// Define os parâmetros esperados para cada rota no seu StackNavigator principal.
+export type RootStackParamList = {
+  Login: undefined;
+  
+  // 3. ALTERADO: A rota MainTab agora está corretamente tipada para aceitar
+  // parâmetros de navegação para as telas definidas em BottomTabParamList.
+  MainTab: NavigatorScreenParams<BottomTabParamList>;
+  
+  AddEditRoutine: { selectedRoutine: Routine | null };
+  WorkoutInProgress: { selectedRoutine?: Routine };
+  
+  // 4. LIMPEZA: As rotas 'Treinos', 'Feed' e 'Conta' foram removidas daqui.
+  // Elas não são filhas diretas do StackNavigator, e sim do TabNavigator,
+  // então não devem ser listadas aqui. Isso torna os tipos mais precisos.
+  // Mantivemos 'Groups' pois você a declarou como uma tela no StackNavigator também.
+  Groups: undefined;
 };
 
-// Você pode adicionar outros tipos globais aqui conforme necessário para o seu aplicativo.
