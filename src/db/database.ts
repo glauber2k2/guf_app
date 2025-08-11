@@ -25,12 +25,13 @@ export const getDBConnection = async (): Promise<SQLite.SQLiteDatabase> => {
  * Este é o único lugar onde os comandos CREATE TABLE devem estar.
  */
 const createTables = async (dbInstance: SQLite.SQLiteDatabase) => {
-  // Tabela de Rotinas
+  // Tabela de Rotinas com id como TEXT PRIMARY KEY e createdAt para ordenar
   await dbInstance.executeSql(`
     CREATE TABLE IF NOT EXISTS routines (
-      id INTEGER PRIMARY KEY,
+      id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
-      exercises TEXT NOT NULL
+      exercises TEXT NOT NULL,
+      createdAt INTEGER
     );
   `);
 
@@ -71,4 +72,10 @@ export const initDatabase = async (): Promise<void> => {
   const dbInstance = await getDBConnection();
   await createTables(dbInstance);
   console.log("Banco de dados e tabelas inicializados com sucesso!");
+};
+
+export const clearLocalData = async (): Promise<void> => {
+  const db = await getDBConnection();
+  await db.executeSql('DELETE FROM routines');
+  // Apague outras tabelas que precisar
 };

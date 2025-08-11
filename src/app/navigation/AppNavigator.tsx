@@ -1,60 +1,69 @@
-import { StatusBar, Platform } from "react-native";
-
+import React from "react";
+import { StatusBar, View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import MainTab from "./MainTabNavigator";
+// Hook de autenticação e tipos com caminhos corretos
+import { useAuth } from "../contexts/AuthContext";
 import { RootStackParamList } from "../../shared/types";
+
+// Telas principais
+import MainTabNavigator from "./MainTabNavigator"; // Supondo que esteja na mesma pasta
 import WorkoutInProgressScreen from "../../features/workout/screens/WorkoutInProgressScreen";
 import AddEditRoutineScreen from "../../features/workout/screens/AddEditRoutineModal";
 import GroupsScreen from "../../features/groups/screens/GroupsScreen";
-import Login from "../../features/auth/screens/login";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useColorScheme } from "react-native";
+
+// Telas de autenticação
+import LoginScreen from "../../features/auth/screens/login";
+import SignUpScreen from "../../features/auth/screens/SignUpScreen";
+import { useColorScheme } from "nativewind";
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
-  const theme = useColorScheme();
+  const theme = useColorScheme().colorScheme;
+  const { user, initializing } = useAuth(); // Pega o usuário e o estado de inicialização do contexto
+
+  // Mostra uma tela de carregamento enquanto o Firebase verifica o login
+  if (initializing) {
+    return (
+      <View className="flex-1 justify-center items-center bg-zinc-200 dark:bg-zinc-900">
+        <ActivityIndicator
+          size="large"
+          color={theme === "dark" ? "#FFFFFF" : "#000000"}
+        />
+      </View>
+    );
+  }
 
   return (
-    <SafeAreaView className="flex-1 bg-zinc-200 dark:bg-zinc-900">
+    <SafeAreaView className=" flex-1 bg-zinc-200 dark:bg-zinc-900">
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-
-          <Stack.Screen
-            name="MainTab"
-            component={MainTab}
-            options={{ headerShown: false }}
-          />
-
-          <Stack.Screen
-            name="WorkoutInProgress"
-            component={WorkoutInProgressScreen}
-            options={{ headerShown: false }}
-          />
-
-          <Stack.Screen
-            name="AddEditRoutine"
-            component={AddEditRoutineScreen}
-            options={{
-              headerShown: false,
-              presentation: "modal",
-            }}
-          />
-
-          <Stack.Screen
-            name="Groups"
-            component={GroupsScreen}
-            options={{ headerShown: false }}
-          />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {user ? (
+            // Usuário está LOGADO: renderiza as telas principais
+            <>
+              <Stack.Screen name="MainTab" component={MainTabNavigator} />
+              <Stack.Screen
+                name="WorkoutInProgress"
+                component={WorkoutInProgressScreen}
+              />
+              <Stack.Screen
+                name="AddEditRoutine"
+                component={AddEditRoutineScreen}
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen name="Groups" component={GroupsScreen} />
+            </>
+          ) : (
+            // Usuário está DESLOGADO: renderiza as telas de autenticação
+            <>
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="SignUp" component={SignUpScreen} />
+            </>
+          )}
         </Stack.Navigator>
-
         <StatusBar
           barStyle={theme === "dark" ? "light-content" : "dark-content"}
         />

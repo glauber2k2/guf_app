@@ -1,0 +1,620 @@
+[
+    {
+        "id": "ex1",
+        "name": "Supino Reto",
+        "muscleFocus": "Peito",
+        "muscleSecondary": [
+            "Tríceps",
+            "Deltoide Anterior"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex2",
+        "name": "Agachamento",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos",
+            "Posterior de Coxa"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex3",
+        "name": "Puxada na Barra",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps",
+            "Deltoide Posterior"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex4",
+        "name": "Rosca Direta",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex5",
+        "name": "Tríceps Testa",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex6",
+        "name": "Levantamento Terra",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Glúteos",
+            "Posterior de Coxa"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex7",
+        "name": "Desenvolvimento com Halteres",
+        "muscleFocus": "Deltoide",
+        "muscleSecondary": [
+            "Tríceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex8",
+        "name": "Elevação Lateral",
+        "muscleFocus": "Deltoide Lateral",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex9",
+        "name": "Cadeira Extensora",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex10",
+        "name": "Cadeira Flexora",
+        "muscleFocus": "Posterior de Coxa",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex11",
+        "name": "Abdominal Crunch",
+        "muscleFocus": "Abdômen",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex12",
+        "name": "Rosca Martelo",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [
+            "Antebraço"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex13",
+        "name": "Tríceps Pulley",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex14",
+        "name": "Remada Curvada",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps",
+            "Deltoide Posterior"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex15",
+        "name": "Stiff",
+        "muscleFocus": "Posterior de Coxa",
+        "muscleSecondary": [
+            "Glúteos"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex16",
+        "name": "Panturrilha em Pé",
+        "muscleFocus": "Panturrilha",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex17",
+        "name": "Panturrilha Sentado",
+        "muscleFocus": "Panturrilha",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex18",
+        "name": "Pull-over com Halteres",
+        "muscleFocus": "Peito",
+        "muscleSecondary": [
+            "Costas"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex19",
+        "name": "Barra Fixa",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex20",
+        "name": "Prancha",
+        "muscleFocus": "Core",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex21",
+        "name": "Flexão de Braço",
+        "muscleFocus": "Peito",
+        "muscleSecondary": [
+            "Tríceps",
+            "Deltoide Anterior"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex22",
+        "name": "Agachamento Búlgaro",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos",
+            "Posterior de Coxa"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex23",
+        "name": "Remada Unilateral com Halteres",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex24",
+        "name": "Rosca Concentrada",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex25",
+        "name": "Tríceps Francês",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex26",
+        "name": "Desenvolvimento Militar",
+        "muscleFocus": "Deltoide",
+        "muscleSecondary": [
+            "Tríceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex27",
+        "name": "Elevação Frontal",
+        "muscleFocus": "Deltoide Anterior",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex28",
+        "name": "Levantamento Terra Romeno",
+        "muscleFocus": "Posterior de Coxa",
+        "muscleSecondary": [
+            "Glúteos"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex29",
+        "name": "Cadeira Abdutora",
+        "muscleFocus": "Glúteos",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex30",
+        "name": "Cadeira Adutora",
+        "muscleFocus": "Adutores",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex31",
+        "name": "Elevação de Quadril",
+        "muscleFocus": "Glúteos",
+        "muscleSecondary": [
+            "Posterior de Coxa"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex32",
+        "name": "Abdominal Infra",
+        "muscleFocus": "Abdômen Inferior",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex33",
+        "name": "Rosca Inversa",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [
+            "Antebraço"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex34",
+        "name": "Tríceps Kickback",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex35",
+        "name": "Remada Baixa",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex36",
+        "name": "Glúteo 4 Apoios",
+        "muscleFocus": "Glúteos",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex37",
+        "name": "Rosca Scott",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex38",
+        "name": "Puxada Frente",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex39",
+        "name": "Flexão Diamante",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [
+            "Peito"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex40",
+        "name": "Abdominal Oblíquo",
+        "muscleFocus": "Abdômen",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex41",
+        "name": "Puxada na Barra Fechada",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex42",
+        "name": "Agachamento Frontal",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos",
+            "Posterior de Coxa"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex43",
+        "name": "Leg Press",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos",
+            "Posterior de Coxa"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex44",
+        "name": "Elevação de Ombros",
+        "muscleFocus": "Trapézio",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex45",
+        "name": "Rosca Alternada",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex46",
+        "name": "Tríceps Coice",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex47",
+        "name": "Prancha Lateral",
+        "muscleFocus": "Core",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex48",
+        "name": "Abdominal V",
+        "muscleFocus": "Abdômen",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex49",
+        "name": "Puxada Inversa",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex50",
+        "name": "Flexão de Punho",
+        "muscleFocus": "Antebraço",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex51",
+        "name": "Extensão de Punho",
+        "muscleFocus": "Antebraço",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex52",
+        "name": "Glúteo na Máquina",
+        "muscleFocus": "Glúteos",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex53",
+        "name": "Barra Fixa com Pegada Fechada",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex54",
+        "name": "Pullover na Máquina",
+        "muscleFocus": "Peito",
+        "muscleSecondary": [
+            "Costas"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex55",
+        "name": "Ponte",
+        "muscleFocus": "Glúteos",
+        "muscleSecondary": [
+            "Core"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex56",
+        "name": "Elevação Lateral na Máquina",
+        "muscleFocus": "Deltoide Lateral",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex57",
+        "name": "Remada Alta",
+        "muscleFocus": "Trapézio",
+        "muscleSecondary": [
+            "Deltoide"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex58",
+        "name": "Tríceps Mergulho",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex59",
+        "name": "Rosca 21",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex60",
+        "name": "Agachamento Sumô",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos",
+            "Adutores"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex61",
+        "name": "Puxada com Pegada Neutra",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex62",
+        "name": "Elevação de Pernas Suspenso",
+        "muscleFocus": "Abdômen Inferior",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex63",
+        "name": "Flexão de Braço com Elevação de Pernas",
+        "muscleFocus": "Peito",
+        "muscleSecondary": [
+            "Tríceps",
+            "Core"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex64",
+        "name": "Remada Cavalinho",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex65",
+        "name": "Tríceps Pullover",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex66",
+        "name": "Rosca Zottman",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [
+            "Antebraço"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex67",
+        "name": "Agachamento Hack",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex68",
+        "name": "Elevação de Tronco na Bola",
+        "muscleFocus": "Abdômen",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex69",
+        "name": "Flexão de Tríceps na Barra",
+        "muscleFocus": "Tríceps",
+        "muscleSecondary": [],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex70",
+        "name": "Rosca Inversa com Barra",
+        "muscleFocus": "Bíceps",
+        "muscleSecondary": [
+            "Antebraço"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex71",
+        "name": "Agachamento Pistol",
+        "muscleFocus": "Quadríceps",
+        "muscleSecondary": [
+            "Glúteos",
+            "Core"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex72",
+        "name": "Prancha com Elevação de Braço",
+        "muscleFocus": "Core",
+        "muscleSecondary": [
+            "Deltoide",
+            "Glúteos"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex73",
+        "name": "Remada Sentado na Máquina",
+        "muscleFocus": "Costas",
+        "muscleSecondary": [
+            "Bíceps"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex74",
+        "name": "Pullover com Barra",
+        "muscleFocus": "Peito",
+        "muscleSecondary": [
+            "Costas"
+        ],
+        "imageUrl": ""
+    },
+    {
+        "id": "ex75",
+        "name": "Abdominal Bicicleta",
+        "muscleFocus": "Abdômen",
+        "muscleSecondary": [
+            "Oblíquos"
+        ],
+        "imageUrl": ""
+    }
+]

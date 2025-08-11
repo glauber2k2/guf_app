@@ -1,399 +1,269 @@
-// screens/AddEditRoutineScreen.tsx
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
+  SafeAreaView,
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
+  TextInput,
+  FlatList,
+  Modal,
   Alert,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import ExerciseSelector from "../components/ExerciseSelectionModal";
+import SeriesList from "../components/SeriesList";
+
+import firestore from "@react-native-firebase/firestore";
+import exercices from "../../../shared/constants/exercises.json";
 import {
-  useNavigation,
-  useRoute,
-  RouteProp,
-  NavigationProp,
-} from "@react-navigation/native";
-import { SwipeListView } from "react-native-swipe-list-view";
-// 1. REMOVIDO: import { v4 as uuidv4 } from "uuid";
+  ExerciseForRoutine,
+  saveRoutine,
+} from "../../../services/RoutineService";
 
-import RoutineService from "../../../services/RoutineService";
-import { Exercise, RootStackParamList, Routine } from "../../../shared/types"; // Ajuste o tipo se necessário
-import ExerciseSelectionModal from "../components/ExerciseSelectionModal";
-import { MOCK_AVAILABLE_EXERCISES } from "../../../shared/constants";
+type Exercise = {
+  id: string;
+  name: string;
+  muscleFocus: string;
+  muscleSecondary: string[];
+  imageUrl?: string;
+};
 
-type AddEditRoutineScreenRouteProp = RouteProp<
-  RootStackParamList,
-  "AddEditRoutine"
->;
-
-type AddEditRoutineNavigationProp = NavigationProp<RootStackParamList>;
-
-const AddEditRoutineScreen: React.FC = () => {
-  const navigation = useNavigation<AddEditRoutineNavigationProp>();
-  const route = useRoute<AddEditRoutineScreenRouteProp>();
-  const { selectedRoutine } = route.params;
+export default function AddEditRoutineScreen() {
+  const navigation = useNavigation();
 
   const [routineName, setRoutineName] = useState("");
-  const [currentRoutineExercises, setCurrentRoutineExercises] = useState<
-    Exercise[]
+  const [selectedExercises, setSelectedExercises] = useState<
+    Array<{
+      id: string;
+      name: string;
+      muscleFocus: string;
+      muscleSecondary: string[];
+      notes: string;
+      setsData: Array<{
+        setNumber: number;
+        previousReps?: string;
+        previousKg?: string;
+        kg: string;
+        reps: string;
+      }>;
+    }>
   >([]);
+  const [selectorVisible, setSelectorVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // ... (nenhuma outra mudança de estado é necessária)
-  const [exerciseSelectionModalVisible, setExerciseSelectionModalVisible] =
-    useState(false);
-  const [selectedExercisesForModal, setSelectedExercisesForModal] = useState<
-    Exercise[]
-  >([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  function openSelector() {
+    setSelectorVisible(true);
+  }
 
-  useEffect(() => {
-    if (selectedRoutine) {
-      setRoutineName(selectedRoutine.name);
-      setCurrentRoutineExercises([...selectedRoutine.exercises]);
-      setSelectedExercisesForModal([...selectedRoutine.exercises]);
-    } else {
-      setRoutineName("");
-      setCurrentRoutineExercises([]);
-      setSelectedExercisesForModal([]);
-    }
-  }, [selectedRoutine]);
-
-  const handleSaveRoutine = async () => {
-    // ... (validações permanecem as mesmas)
-    if (routineName.trim() === "") {
-      Alert.alert("Erro", "Por favor, insira um nome para a rotina.");
-      return;
-    }
-    const incompleteExercises = currentRoutineExercises.some(
-      (ex) => !ex.sets || !ex.reps
-    );
-    if (incompleteExercises) {
-      Alert.alert(
-        "Atenção",
-        "Por favor, preencha as séries e repetições para todos os exercícios."
-      );
-      return;
-    }
-
-    try {
-      if (selectedRoutine) {
-        // MODO EDIÇÃO (Nenhuma mudança aqui)
-        const updatedRoutine = {
-          id: selectedRoutine.id,
-          name: routineName.trim(),
-          exercises: JSON.stringify(currentRoutineExercises),
-        };
-        await RoutineService.updateRoutine(updatedRoutine as any); // Usamos 'as any' para compatibilidade de tipo
-      } else {
-        // MODO CRIAÇÃO (AQUI ESTÁ A MUDANÇA)
-        // 2. Não geramos mais um ID. Apenas montamos o objeto com os dados.
-        const newRoutineData = {
-          name: routineName.trim(),
-          exercises: JSON.stringify(currentRoutineExercises),
-        };
-        // O serviço agora sabe como lidar com isso
-        await RoutineService.addRoutine(newRoutineData);
-      }
-
-      Alert.alert("Sucesso", `Rotina "${routineName.trim()}" salva!`);
-      navigation.navigate("MainTab", {
-        screen: "Treinos",
-        params: { refresh: true },
-      });
-    } catch (e) {
-      console.error("Erro ao salvar rotina no SQLite:", e);
-      Alert.alert("Erro", "Não foi possível salvar a rotina.");
-    }
-  };
-
-  // NENHUMA OUTRA MUDANÇA É NECESSÁRIA NO RESTO DO ARQUIVO
-  // O código restante do componente permanece o mesmo.
-  // ... (handleCancelRoutine, render, styles, etc.)
-  const handleCancelRoutine = () => {
-    navigation.goBack();
-  };
-
-  const handleOpenExerciseSelection = () => {
-    setSelectedExercisesForModal([...currentRoutineExercises]);
-    setSearchQuery("");
-    setExerciseSelectionModalVisible(true);
-  };
-
-  const handleToggleExerciseSelection = (
-    exercise: Omit<Exercise, "sets" | "reps">
-  ) => {
-    setSelectedExercisesForModal((prevSelected) => {
-      const isSelected = prevSelected.some((e) => e.id === exercise.id);
-      if (isSelected) {
-        return prevSelected.filter((e) => e.id !== exercise.id);
-      } else {
-        return [...prevSelected, { ...exercise, sets: "", reps: "" }];
-      }
-    });
-  };
-
-  const handleSaveExerciseSelection = () => {
-    setCurrentRoutineExercises([...selectedExercisesForModal]);
-    setExerciseSelectionModalVisible(false);
-  };
-
-  const handleCancelExerciseSelection = () => {
-    // Lógica original está correta, reverte para o estado inicial
-    setCurrentRoutineExercises(
-      selectedRoutine ? [...selectedRoutine.exercises] : []
-    );
-    setExerciseSelectionModalVisible(false);
-    setSearchQuery("");
-  };
-
-  const handleRemoveExerciseFromCurrentRoutine = (exerciseId: string) => {
-    setCurrentRoutineExercises((prev) =>
-      prev.filter((e) => e.id !== exerciseId)
-    );
-  };
-
-  const handleUpdateExerciseSetsReps = (
-    exerciseId: string,
-    field: "sets" | "reps",
-    value: string
-  ) => {
-    setCurrentRoutineExercises((prev) =>
-      prev.map((ex) => (ex.id === exerciseId ? { ...ex, [field]: value } : ex))
-    );
-  };
-
-  return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      {/* O JSX (a parte visual) do componente permanece exatamente o mesmo */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleCancelRoutine}>
-          <Ionicons name="arrow-back" size={24} color="#888" />
-        </TouchableOpacity>
-        <Text style={styles.title}>
-          {selectedRoutine ? "Editar Rotina" : "Nova Rotina"}
-        </Text>
-        <View style={{ width: 24 }} />
-      </View>
-      <SwipeListView
-        data={currentRoutineExercises}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.exerciseItem}>
-            <Text style={styles.exerciseName}>{item.name}</Text>
-            <View style={styles.setsRepsContainer}>
-              <TextInput
-                style={styles.setsRepsInput}
-                placeholder="Séries"
-                value={String(item.sets)} // Convertido para string para evitar warnings
-                onChangeText={(text) =>
-                  handleUpdateExerciseSetsReps(item.id, "sets", text)
-                }
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={styles.setsRepsInput}
-                placeholder="Reps"
-                value={item.reps}
-                onChangeText={(text) =>
-                  handleUpdateExerciseSetsReps(item.id, "reps", text)
-                }
-                keyboardType="default"
-              />
-            </View>
-          </View>
-        )}
-        renderHiddenItem={({ item }) => (
-          <View style={styles.rowBack}>
-            <TouchableOpacity
-              style={[styles.backRightBtn, styles.backRightBtnRight]}
-              onPress={() => handleRemoveExerciseFromCurrentRoutine(item.id)}
-            >
-              <Ionicons name="trash-bin" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
-        )}
-        rightOpenValue={-75}
-        disableRightSwipe={true}
-        ListHeaderComponent={
-          <View style={styles.content}>
-            <TextInput
-              style={styles.input}
-              placeholder="Nome da Rotina (ex: Treino de pernas)"
-              value={routineName}
-              onChangeText={setRoutineName}
-              autoCapitalize="words"
-            />
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={handleOpenExerciseSelection}
-            >
-              <Ionicons name="add" size={20} color="white" />
-              <Text style={styles.addButtonText}>Adicionar Exercícios</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.subtitle}>Exercícios:</Text>
-            {currentRoutineExercises.length === 0 && (
-              <Text style={styles.emptyText}>Nenhum exercício adicionado.</Text>
-            )}
-          </View>
+  function onConfirmSelected(selected: Exercise[]) {
+    setSelectedExercises((prev) => {
+      const newList = [...prev];
+      selected.forEach((ex) => {
+        if (!newList.find((e) => e.id === ex.id)) {
+          newList.push({
+            ...ex,
+            notes: "",
+            setsData: [],
+          });
         }
-      />
-      <ExerciseSelectionModal
-        isVisible={exerciseSelectionModalVisible}
-        searchQuery={searchQuery}
-        selectedExercisesForModal={selectedExercisesForModal}
-        onClose={handleCancelExerciseSelection}
-        onConfirm={handleSaveExerciseSelection}
-        onSearchChange={setSearchQuery}
-        onToggleExerciseSelection={handleToggleExerciseSelection}
-        availableExercises={MOCK_AVAILABLE_EXERCISES}
-      />
+      });
+      // Remove exercícios que foram desmarcados no selector
+      return newList.filter((e) => selected.find((s) => s.id === e.id));
+    });
+    setSelectorVisible(false);
+  }
 
-      <View style={styles.footer}>
+  function onCancelSelector() {
+    setSelectorVisible(false);
+  }
+
+  function handleUpdateNotes(exId: string, text: string) {
+    setSelectedExercises((prev) =>
+      prev.map((ex) => (ex.id === exId ? { ...ex, notes: text } : ex))
+    );
+  }
+
+  function handleUpdateSetData(
+    exId: string,
+    setIndex: number,
+    field: "kg" | "reps",
+    value: string
+  ) {
+    setSelectedExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id === exId) {
+          const newSets = [...ex.setsData];
+          newSets[setIndex] = {
+            ...newSets[setIndex],
+            [field]: value,
+          };
+          return { ...ex, setsData: newSets };
+        }
+        return ex;
+      })
+    );
+  }
+
+  function handleDeleteSet(exId: string, setIndex: number) {
+    setSelectedExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id === exId) {
+          const newSets = ex.setsData.filter((_, i) => i !== setIndex);
+          return { ...ex, setsData: newSets };
+        }
+        return ex;
+      })
+    );
+  }
+
+  function handleAddSet(exId: string) {
+    setSelectedExercises((prev) =>
+      prev.map((ex) => {
+        if (ex.id === exId) {
+          const nextSetNumber = ex.setsData.length + 1;
+
+          const newSet = {
+            setNumber: nextSetNumber,
+            kg: "",
+            reps: "",
+          };
+
+          return {
+            ...ex,
+            setsData: [...ex.setsData, newSet], // Adicione o novo objeto "limpo"
+          };
+        }
+        return ex;
+      })
+    );
+  }
+
+  // Render fallback quando não há exercícios
+  const renderEmptyList = () => (
+    <View className="items-center mt-20 flex-1 justify-center">
+      <Ionicons
+        name="alert-circle-outline"
+        size={64}
+        color="#a78bfa"
+        style={{ marginBottom: 12 }}
+      />
+      <Text className="text-zinc-500 dark:text-zinc-400 mb-6 text-center">
+        Nenhum exercício selecionado.
+      </Text>
+      <TouchableOpacity
+        className="bg-violet-600 rounded-full px-6 py-3"
+        onPress={openSelector}
+        activeOpacity={0.8}
+      >
+        <Text className="text-white font-semibold text-base">
+          Adicionar Exercícios
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  async function handleSaveRoutine() {
+    setLoading(true);
+    try {
+      await saveRoutine(routineName, selectedExercises as ExerciseForRoutine[]);
+      Alert.alert("Sucesso", "Rotina salva com sucesso!");
+      navigation.goBack();
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Falha ao salvar rotina.");
+    } finally {
+      setLoading(false);
+    }
+  }
+  return (
+    <SafeAreaView className="dark:bg-zinc-800 bg-zinc-100 flex-1">
+      {/* Header */}
+      <View className="dark:bg-zinc-900 bg-zinc-200 flex-row items-center p-3 gap-4 mb-6">
         <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={handleCancelRoutine}
+          className="p-2"
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+          disabled={loading}
         >
-          <Text style={styles.cancelButtonText}>Cancelar</Text>
+          <Text className="text-violet-600 font-semibold text-base">
+            Cancelar
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveRoutine}>
-          <Text style={styles.saveButtonText}>
-            {selectedRoutine ? "Salvar Edição" : "Salvar"}
+
+        <View className="flex-1 items-center">
+          <Text className="text-zinc-800 dark:text-zinc-100 font-bold text-lg">
+            Adicionar Exercício
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          className="p-2"
+          activeOpacity={0.7}
+          onPress={handleSaveRoutine}
+          disabled={loading}
+        >
+          <Text className="text-violet-600 font-semibold text-base">
+            {loading ? "Salvando..." : "Salvar"}
           </Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
-  );
-};
-// ... (seus estilos aqui, não precisam de mudança)
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f4f4f4" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: Platform.OS === "android" ? 40 : 50, // Ajuste para melhor visualização
-    paddingHorizontal: 15,
-    paddingBottom: 15,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  title: { fontSize: 20, fontWeight: "bold", color: "#333" },
-  content: { padding: 20 },
-  input: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    padding: 15,
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: "#555",
-    marginVertical: 10,
-  },
-  emptyText: { color: "#777", marginBottom: 15, textAlign: "center" },
-  exerciseItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 15,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderColor: "#f0f0f0",
-  },
-  exerciseName: { fontSize: 16, color: "#333", flex: 1 },
-  setsRepsContainer: { flexDirection: "row", alignItems: "center" },
-  setsRepsInput: {
-    backgroundColor: "#f4f4f4",
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    fontSize: 14,
-    color: "#333",
-    width: 70,
-    textAlign: "center",
-    marginLeft: 8,
-  },
-  rowBack: {
-    alignItems: "center",
-    backgroundColor: "#db4045",
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginBottom: 1, // Ajuste para alinhar com o item
-  },
-  backRightBtn: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 75,
-    height: "100%",
-  },
-  backRightBtnRight: {
-    backgroundColor: "#db4045",
-  },
-  addButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#541cb6",
-    borderRadius: 35,
-    paddingVertical: 12,
-  },
-  addButtonText: {
-    color: "white",
-    marginLeft: 10,
-    fontWeight: "500",
-    fontSize: 16,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: "#ddd",
-  },
-  cancelButton: {
-    backgroundColor: "#f4f4f4",
-    paddingVertical: 12,
-    borderRadius: 35,
-    flex: 1,
-    marginRight: 5,
-  },
-  cancelButtonText: {
-    color: "#333",
-    fontWeight: "500",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  saveButton: {
-    backgroundColor: "#541cb6",
-    paddingVertical: 12,
-    borderRadius: 35,
-    flex: 1,
-    marginLeft: 5,
-  },
-  saveButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});
 
-export default AddEditRoutineScreen;
+      {/* Nome da rotina */}
+      <View className="px-4 mb-4">
+        <TextInput
+          placeholder="Nome da rotina"
+          placeholderTextColor="#888"
+          className="bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 rounded-md p-4 text-lg"
+          value={routineName}
+          onChangeText={setRoutineName}
+          editable={!loading}
+        />
+      </View>
+
+      {/* Lista de exercícios */}
+      <FlatList
+        data={selectedExercises}
+        keyExtractor={(item) => item.id}
+        ListEmptyComponent={renderEmptyList}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
+        renderItem={({ item }) => (
+          <SeriesList
+            item={item}
+            handleUpdateNotes={handleUpdateNotes}
+            handleUpdateSetData={handleUpdateSetData}
+            handleDeleteSet={handleDeleteSet}
+            handleAddSet={handleAddSet}
+          />
+        )}
+      />
+
+      {/* Botão para adicionar mais exercícios */}
+      {selectedExercises.length > 0 && (
+        <TouchableOpacity
+          className="bg-violet-600 rounded-full px-6 py-3 self-center my-6"
+          onPress={openSelector}
+          activeOpacity={0.8}
+          disabled={loading}
+        >
+          <Text className="text-white font-semibold text-base">
+            Adicionar Mais Exercícios
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Modal fullscreen para ExerciseSelector */}
+      <Modal
+        visible={selectorVisible}
+        animationType="slide"
+        onRequestClose={onCancelSelector}
+        presentationStyle="fullScreen"
+      >
+        <ExerciseSelector
+          exercises={exercices}
+          onConfirm={onConfirmSelected}
+          onCancel={onCancelSelector}
+        />
+      </Modal>
+    </SafeAreaView>
+  );
+}

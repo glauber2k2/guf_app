@@ -43,6 +43,7 @@ export type BottomTabParamList = {
 // Define os parâmetros esperados para cada rota no seu StackNavigator principal.
 export type RootStackParamList = {
   Login: undefined;
+  SignUp: undefined;
   
   // 3. ALTERADO: A rota MainTab agora está corretamente tipada para aceitar
   // parâmetros de navegação para as telas definidas em BottomTabParamList.
