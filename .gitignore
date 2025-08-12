@@ -35,3 +35,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+#Credencais google
+android/app/google-services.json
+ios/GoogleService-Info.plist
