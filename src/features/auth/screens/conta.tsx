@@ -11,7 +11,7 @@ import { AntDesign } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 
 // Importa o hook para acessar os dados do usuário autenticado
-import { useAuth } from "../../../app/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { clearLocalData } from "../../../db/database";
 
 export default function ContaScreen() {
@@ -49,6 +49,8 @@ export default function ContaScreen() {
     if (!email) return "?";
     return email.charAt(0).toUpperCase();
   };
+
+  console.log(user);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100 dark:bg-zinc-900">

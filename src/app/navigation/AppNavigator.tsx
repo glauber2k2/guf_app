@@ -5,7 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Hook de autenticação e tipos com caminhos corretos
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { RootStackParamList } from "../../shared/types";
 
 // Telas principais

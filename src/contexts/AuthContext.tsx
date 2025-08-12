@@ -11,6 +11,7 @@ import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 interface AuthContextData {
   user: FirebaseAuthTypes.User | null;
   initializing: boolean; // Para sabermos se o Firebase já verificou o estado inicial
+  refreshUser: () => Promise<void>; // Função para atualizar o usuário manualmente
 }
 
 // Cria o Contexto
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    // Este listener é chamado sempre que o usuário faz login ou logout
+    // Listener para login/logout
     const subscriber = auth().onAuthStateChanged((userState) => {
       setUser(userState);
       if (initializing) {
@@ -30,12 +31,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // Encerra o listener quando o componente é desmontado
+    // Limpa o listener ao desmontar
     return subscriber;
   }, []);
 
+  // Função para forçar reload do usuário atual e atualizar estado
+  const refreshUser = async () => {
+    const currentUser = auth().currentUser;
+    if (currentUser) {
+      await currentUser.reload();
+      setUser(auth().currentUser);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, initializing }}>
+    <AuthContext.Provider value={{ user, initializing, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

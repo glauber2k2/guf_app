@@ -14,12 +14,9 @@ import { Ionicons } from "@expo/vector-icons";
 import ExerciseSelector from "../components/ExerciseSelectionModal";
 import SeriesList from "../components/SeriesList";
 
-import firestore from "@react-native-firebase/firestore";
 import exercices from "../../../shared/constants/exercises.json";
-import {
-  ExerciseForRoutine,
-  saveRoutine,
-} from "../../../services/RoutineService";
+import { saveRoutine } from "../../../services/RoutineService";
+import { ExerciseForRoutine } from "../../../shared/types";
 
 type Exercise = {
   id: string;

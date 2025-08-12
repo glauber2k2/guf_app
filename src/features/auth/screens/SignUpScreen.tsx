@@ -20,12 +20,17 @@ import Logo from "../../../assets/logoguf.png";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../shared/types"; // Ajuste o caminho se necessário
 
+import { useAuth } from "../../../contexts/AuthContext";
+
 type Props = StackScreenProps<RootStackParamList, "SignUp">;
 
 export default function SignUpScreen({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const { refreshUser } = useAuth();
 
   async function handleSignUp() {
     if (!email.trim() || !password.trim()) {
@@ -34,11 +39,19 @@ export default function SignUpScreen({ navigation }: Props) {
     }
     setIsLoading(true);
     try {
-      await auth().createUserWithEmailAndPassword(email, password);
+      // Cria o usuário
+      const userCredential = await auth().createUserWithEmailAndPassword(
+        email,
+        password
+      );
 
-      // Após o cadastro, o listener onAuthStateChanged também será acionado,
-      // fazendo o login automático. Portanto, não navegamos manualmente.
-      // Apenas damos um feedback ao usuário.
+      // Atualiza o displayName
+      await userCredential.user.updateProfile({
+        displayName: displayName.trim(),
+      });
+
+      await refreshUser();
+
       Alert.alert("Sucesso!", "Sua conta foi criada e você já está logado.");
     } catch (error: any) {
       let errorMessage = "Não foi possível criar a conta. Tente novamente.";
@@ -83,6 +96,14 @@ export default function SignUpScreen({ navigation }: Props) {
 
         <TextInput
           className="w-full dark:bg-white/5 dark:text-zinc-100 bg-black/5 py-4 px-6 rounded-full mb-4"
+          placeholder="Seu nome"
+          value={displayName}
+          onChangeText={setDisplayName}
+          editable={!isLoading}
+          placeholderTextColor={"#999"}
+        />
+        <TextInput
+          className="w-full dark:bg-white/5 dark:text-zinc-100 bg-black/5 py-4 px-6 rounded-full mb-4"
           placeholder="Seu melhor e-mail"
           value={email}
           onChangeText={setEmail}
@@ -91,7 +112,6 @@ export default function SignUpScreen({ navigation }: Props) {
           editable={!isLoading}
           placeholderTextColor={"#999"}
         />
-
         <TextInput
           className="w-full dark:bg-white/5 dark:text-zinc-100 bg-black/5 py-4 px-6 rounded-full mb-4"
           placeholder="Crie uma senha forte"

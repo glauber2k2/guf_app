@@ -3,29 +3,8 @@
 import firestore, { Timestamp } from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import { getDBConnection } from "../db/database";
+import { ExerciseForRoutine, Routine } from "../shared/types";
 
-export type ExerciseForRoutine = {
-  id: string;
-  name: string;
-  muscleFocus: string;
-  muscleSecondary: string[];
-  notes: string;
-  setsData: Array<{
-    setNumber: number;
-    previousReps?: string;
-    previousKg?: string;
-    kg: string;
-    reps: string;
-  }>;
-};
-
-export type Routine = {
-  id: string;
-  userId: string;
-  name: string;
-  exercises: ExerciseForRoutine[];
-  createdAt?: Timestamp | null;
-};
 
 async function saveRoutineLocal(routine: Routine): Promise<void> {
   const db = await getDBConnection();

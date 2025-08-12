@@ -6,7 +6,7 @@ import AppNavigator from "./navigation/AppNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import { cssInterop } from "nativewind";
 import { initDatabase } from "../db/database";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "../contexts/AuthContext";
 
 export default function App() {
   // Configuração para NativeWind funcionar com Ionicons

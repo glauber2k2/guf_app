@@ -1,23 +1,32 @@
 // src/types.ts
 
 // 1. ADICIONADO: Importar o tipo helper para navegadores aninhados
+import { Timestamp } from '@react-native-firebase/firestore';
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
 // Definição do tipo Exercise
-export type Exercise = {
+export type ExerciseForRoutine = {
   id: string;
   name: string;
-  sets: string;
-  reps: string;
+  muscleFocus: string;
+  muscleSecondary: string[];
+  notes: string;
+  setsData: Array<{
+    setNumber: number;
+    previousReps?: string;
+    previousKg?: string;
+    kg: string;
+    reps: string;
+  }>;
 };
 
-// Definição do tipo Routine
 export type Routine = {
   id: string;
+  userId: string;
   name: string;
-  exercises: Exercise[];
+  exercises: ExerciseForRoutine[];
+  createdAt?: Timestamp | null;
 };
-
 // Tipo para Grupos
 export type Group = {
   id: string;

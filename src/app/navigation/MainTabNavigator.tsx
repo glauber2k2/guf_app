@@ -71,7 +71,7 @@ export default function MainTab() {
     >
       <Tab.Screen name="Treinos" component={TreinosScreen} />
       <Tab.Screen name="Feed" component={FeedScreen} />
-      <Tab.Screen name="Groups" component={GroupsScreen} />
+      {/* <Tab.Screen name="Groups" component={GroupsScreen} /> */}
       <Tab.Screen name="Conta" component={ContaScreen} />
     </Tab.Navigator>
   );
